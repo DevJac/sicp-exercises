@@ -1,12 +1,61 @@
-* SICP [0/356] [0%]
+* SICP [4/356] [1%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
-** Chapter 1 [0/46] [0%]
-*** TODO Exercise 1.1
-*** TODO Exercise 1.2
-*** TODO Exercise 1.3
-*** TODO Exercise 1.4
+** Chapter 1 [4/46] [8%]
+*** DONE Exercise 1.1
+CLOSED: [2017-12-17 Sun 22:11]
+The expected outputs are:
+
+#+BEGIN_EXAMPLE
+10
+12
+8
+3
+6
+19
+#f
+4
+16
+6
+16
+#+END_EXAMPLE
+
+I performed these calculations mentally, and they matched the results I got from the interpreter.
+*** DONE Exercise 1.2
+CLOSED: [2017-12-17 Sun 22:16]
+#+BEGIN_SRC scheme
+(/
+ (+ 5 4 (- 2 (- 3 (+ 6 (/ 4 5)))))
+ (* 3 ( - 6 2) (- 2 7))
+ )
+#+END_SRC
+
+The result was ~-37/150~ which matched the solutions I found online.
+*** DONE Exercise 1.3
+CLOSED: [2017-12-17 Sun 22:29]
+#+BEGIN_SRC scheme
+(define (square n) (* n n))
+(define (sum-of-squares a b) (+ (square a) (square b)))
+
+(define (f a b c)
+  (cond
+    ((and (> b a) (> c a)) (sum-of-squares b c))
+    ((and (> a b) (> c b)) (sum-of-squares a c))
+    ((and (> a c) (> b c)) (sum-of-squares a b))
+    )
+  )
+#+END_SRC
+*** DONE Exercise 1.4
+CLOSED: [2017-12-17 Sun 22:35]
+This question asked me to describe the behavior of:
+
+#+BEGIN_SRC scheme
+(define (a-plus-abs-b a b)
+  ((if (> b 0) + -) a b))
+#+END_SRC
+
+The behavior is well described by the name of the function. It calculates ~a~ plus the absolute value of ~b~. This works because if ~b~ is negative (as tested by the if expression in the code) then it will perform an ~a~ minus ~b~ operation, and since ~b~ is already negative the double negative will result in addition.
 *** TODO Exercise 1.5
 *** TODO Exercise 1.6
 *** TODO Exercise 1.7
