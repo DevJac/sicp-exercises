@@ -1,8 +1,8 @@
-* SICP [4/356] [1%]
+* SICP [7/356] [1%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
-** Chapter 1 [4/46] [8%]
+** Chapter 1 [7/46] [15%]
 *** DONE Exercise 1.1
 CLOSED: [2017-12-17 Sun 22:11]
 The expected outputs are:
@@ -56,9 +56,44 @@ This question asked me to describe the behavior of:
 #+END_SRC
 
 The behavior is well described by the name of the function. It calculates ~a~ plus the absolute value of ~b~. This works because if ~b~ is negative (as tested by the if expression in the code) then it will perform an ~a~ minus ~b~ operation, and since ~b~ is already negative the double negative will result in addition.
-*** TODO Exercise 1.5
-*** TODO Exercise 1.6
-*** TODO Exercise 1.7
+*** DONE Exercise 1.5
+CLOSED: [2017-12-18 Mon 22:08]
+If the language is using applicative-order evaluation, the code will enter an infinite loop, because both arguments will be evaluated right away, and the ~p~ function enters and infinite loop. With normal-order evaluation, the code will return ~0~ and will not enter an infinite loop because the value of ~p~ is never needed.
+*** DONE Exercise 1.6
+CLOSED: [2017-12-19 Tue 22:18]
+The program will enter an infinite loop because ~new-if~ does not have the short-circuiting behavior that the regular ~if~ expression does. Every time the ~new-if~ experssion is evaluated, the recursive call to ~sqrt-iter~ will be called and the loop will never end.
+*** DONE Exercise 1.7
+CLOSED: [2017-12-19 Tue 22:43]
+#+BEGIN_SRC scheme
+(define (square n) (* n n))
+
+(define (sqrt-iter guess x old-guess)
+  (if (good-enough? guess x old-guess)
+      guess
+      (sqrt-iter (improve guess x) x guess)))
+
+(define (improve guess x)
+  (average guess (/ x guess)))
+
+(define (average x y)
+  (/ (+ x y) 2))
+
+(define (good-enough? guess x old-guess)
+  (< (abs (- guess old-guess)) (* guess 0.001))
+  )
+
+(define (sqrt x)
+  (sqrt-iter 1.0 x 0.0))
+
+(/ (square (sqrt 1)) 1)
+(/ (square (sqrt 2)) 2)
+(/ (square (sqrt 10)) 10)
+(/ (square (sqrt 0.000001)) 0.000001)
+(/ (square (sqrt 10000000000000000000000000000000)) 10000000000000000000000000000000)
+#+END_SRC
+The above code is modified as requested in the exercise. Before the modification, the code would return a result that was approximately 1000 time too large for the small number case, and would freeze completely on the large number case (there probably wasn't enough precision available to get within the hard coded ~0.001~ tolerance for the large number case).
+
+After the modification all the tests return a reasonably accurate result quickly, even for the small and large number cases.
 *** TODO Exercise 1.8
 *** TODO Exercise 1.9
 *** TODO Exercise 1.10
