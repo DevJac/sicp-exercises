@@ -1,8 +1,8 @@
-* SICP [7/356] [1%]
+* SICP [11/356] [3%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
-** Chapter 1 [7/46] [15%]
+** Chapter 1 [11/46] [23%]
 *** DONE Exercise 1.1
 CLOSED: [2017-12-17 Sun 22:11]
 The expected outputs are:
@@ -94,11 +94,130 @@ CLOSED: [2017-12-19 Tue 22:43]
 The above code is modified as requested in the exercise. Before the modification, the code would return a result that was approximately 1000 time too large for the small number case, and would freeze completely on the large number case (there probably wasn't enough precision available to get within the hard coded ~0.001~ tolerance for the large number case).
 
 After the modification all the tests return a reasonably accurate result quickly, even for the small and large number cases.
-*** TODO Exercise 1.8
-*** TODO Exercise 1.9
+*** DONE Exercise 1.8
+CLOSED: [2017-12-21 Thu 11:00]
+#+BEGIN_SRC scheme
+(define (square n) (* n n))
+(define (cube n) (* n n n))
+
+(define (cube-root-iter guess x old-guess)
+  (if (good-enough? guess x old-guess)
+      guess
+      (cube-root-iter (improve guess x) x guess)))
+
+(define (improve guess x)
+  (/
+   (+ (/ x (square guess)) (* 2 guess))
+   3)
+  )
+
+(define (good-enough? guess x old-guess)
+  (< (abs (- guess old-guess)) (* guess 0.001))
+  )
+
+(define (cube-root x)
+  (cube-root-iter 1.0 x 0.0))
+
+(/ (cube (cube-root 1)) 1)
+(/ (cube (cube-root 2)) 2)
+(/ (cube (cube-root 10)) 10)
+(/ (cube (cube-root 0.000001)) 0.000001)
+(/ (cube (cube-root 10000000000000000000000000000000)) 10000000000000000000000000000000)
+#+END_SRC
+I modified the code from exercise 1.7 to calculate the cube root instead of the square root.
+*** DONE Exercise 1.9
+CLOSED: [2017-12-21 Thu 12:02]
+#+BEGIN_SRC scheme
+(define (+ a b)
+  (if (= a 0) b (inc (+ (dec a) b))))
+(define (+ a b)
+  (if (= a 0) b (+ (dec a) (inc b))))
+#+END_SRC
+This question asks about these two procedures: Are the processes described by these procedures iterative or recursive?
+
+The first procedure describes a recursive process. It will build up many ~inc~ operations on the stack.
+
+The second procedure describes a iterative process. The ~dec~ and ~inc~ operations are performed right away, and then the procedure calls itself recursively. There is are no steps left to be performed so the stack is not needed. Also, the variables ~a~ and ~b~ give a complete description of where we are in the iterative process.
+
+Using the substitution model, the two procedures work as follows:
+#+BEGIN_EXAMPLE
+(+ 4 5)
+(inc (+ (dec 4) 5))
+(inc (+ 3 5))
+(inc (inc (+ (dec 3) 5)))
+(inc (inc (+ 2 5)))
+(inc (inc (inc (+ (dec 2) 5))))
+(inc (inc (inc (+ 1 5))))
+(inc (inc (inc (inc (+ (dec 1) 5)))))
+(inc (inc (inc (inc (+ 0 5)))))
+(inc (inc (inc (inc 5))))
+(inc (inc (inc 6)))
+(inc (inc 7))
+(inc 8)
+9
+
+(+ 4 5)
+(+ (dec 4) (inc 5))
+(+ 3 6)
+(+ (dec 3) (inc 6))
+(+ 2 7)
+(+ (dec 2) (inc 7))
+(+ 1 8)
+(+ (dec 1) (inc 8))
+(+ 0 9)
+9
+#+END_EXAMPLE
 *** TODO Exercise 1.10
-*** TODO Exercise 1.11
-*** TODO Exercise 1.12
+*** DONE Exercise 1.11
+CLOSED: [2017-12-21 Thu 13:32]
+#+BEGIN_SRC scheme
+(define (fr n)
+  (cond
+    ((< n 3) n)
+    (else (+ (fr (- n 1)) (* 2 (fr (- n 2))) (* 3 (fr (- n 3)))))
+    ))
+
+(fr 0)
+(fr 1)
+(fr 2)
+(fr 3)
+(fr 4)
+(fr 5)
+(fr 6)
+(fr 7)
+
+(define (fi n)
+  (define (fi-iter a b c n)
+    (cond
+      ((= n 0) a)
+      (else (fi-iter (+ a (* 2 b) (* 3 c)) a b (dec n)))
+      ))
+  (cond
+    ((< n 3) n)
+    (else (fi-iter 2 1 0 (- n 2)))
+    ))
+
+(fi 0)
+(fi 1)
+(fi 2)
+(fi 3)
+(fi 4)
+(fi 5)
+(fi 6)
+(fi 7)
+#+END_SRC
+*** DONE Exercise 1.12
+CLOSED: [2017-12-21 Thu 14:05]
+#+BEGIN_SRC scheme
+(define (pas n m)
+  (cond
+    ((<= n 0) 0)
+    ((<= m 0) 0)
+    ((= m 1) 1)
+    ((= n m) 1)
+    (else (+ (pas (dec n) (dec m)) (pas (dec n) m)))
+    ))
+#+END_SRC
 *** TODO Exercise 1.13
 *** TODO Exercise 1.14
 *** TODO Exercise 1.15
