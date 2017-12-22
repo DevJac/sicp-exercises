@@ -1,8 +1,8 @@
-* SICP [13/356] [3%]
+* SICP [16/356] [4%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
-** Chapter 1 [13/46] [28%]
+** Chapter 1 [16/46] [34%]
 *** DONE Exercise 1.1
 CLOSED: [2017-12-17 Sun 22:11]
 The expected outputs are:
@@ -275,9 +275,77 @@ CLOSED: [2017-12-21 Thu 22:25]
 ~p~ will be called 5 times.
 
 Notice that if we triple the angle we are calling ~sine~ with, it will only add one additional call to ~p~, because we are dividing at every step of the recursive process. This makes it so the order of growth for both time (steps) and space is ~O(log n)~.
-*** TODO Exercise 1.16
-*** TODO Exercise 1.17
-*** TODO Exercise 1.18
+*** DONE Exercise 1.16
+CLOSED: [2017-12-22 Fri 14:03]
+#+BEGIN_SRC scheme
+(define (half n) (/ n 2))
+(define (square n) (* n n))
+(define (even? n) (= (remainder n 2) 0))
+
+(define (exp b n)
+  (define (exp-iter a b n)
+    (cond
+      ((= n 0) a)
+      ((even? n) (exp-iter a (square b) (half n)))
+      (else (exp-iter (* a b) b (dec n)))
+      )
+    )
+  (exp-iter 1 b n)
+  )
+#+END_SRC
+*** DONE Exercise 1.17
+CLOSED: [2017-12-22 Fri 14:18]
+#+BEGIN_SRC scheme
+(define (half n) (/ n 2))
+(define (double n) (* 2 n))
+(define (even? n) (= (remainder n 2) 0))
+
+(define (multiply a b)
+  (cond
+    ((= b 1) a)
+    ((even? b) (double (multiply a (half b))))
+    (else (+ a (multiply a (dec b))))
+    )
+  )
+#+END_SRC
+*** DONE Exercise 1.18
+CLOSED: [2017-12-22 Fri 14:54]
+#+BEGIN_SRC scheme
+(define (half n) (/ n 2))
+(define (double n) (* 2 n))
+(define (even? n) (= (remainder n 2) 0))
+
+(define (multiply a b)
+  (define (multiply-iter a b c)
+    (cond
+      ((= b 0) c)
+      ((even? b) (multiply-iter (double a) (half b) c))
+      (else (multiply-iter a (dec b) (+ a c)))
+      ))
+  (multiply-iter a b 0)
+  )
+#+END_SRC
+
+Exercise 1.16 says:
+
+#+BEGIN_QUOTE
+In general, the technique of defining an invariant quantity
+that remains unchanged from state to state is a powerful
+way to think about the design of iterative algorithms.
+#+END_QUOTE
+
+This exercise is a great example of that.
+
+The invariants here are:
+
+#+BEGIN_EXAMPLE
+For the initial case:  ab = ab + c where c = 0
+For the even case:     ab + c = 2a * (1/2)b + c
+For the odd case:      ab + c = a * (b - 1) + (c + a)
+For the terminal case: ab + c = c where b = 0
+#+END_EXAMPLE
+
+Notice that both the even and odd cases move us towards our terminal case.
 *** TODO Exercise 1.19
 *** TODO Exercise 1.20
 *** TODO Exercise 1.21
