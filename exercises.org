@@ -1,8 +1,8 @@
-* SICP [12/356] [3%]
+* SICP [13/356] [3%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
-** Chapter 1 [12/46] [26%]
+** Chapter 1 [13/46] [28%]
 *** DONE Exercise 1.1
 CLOSED: [2017-12-17 Sun 22:11]
 The expected outputs are:
@@ -260,7 +260,21 @@ The time complexity is ~O(n^5)~ because there are 5 kinds of coins. Consider:
 If we only had 1 kind of coin, it would be straight counting (by the value of that one coin) up to the number of cents we need to make change for. This would be an ~O(n)~ process.
 If we had 2 kinds of coins, we would do straight counting by the first coin (~O(n)~), but *for each step* in the counting we would have to count out the remainder from the first coin using the second coin (this counting of the remainder would be ~O(n)~). Combine the two different counts and we get ~O(n^2)~.
 Continuing with this logic we eventually get ~O(n^5)~ for the complexity when using all 5 coins.
-*** TODO Exercise 1.15
+*** DONE Exercise 1.15
+CLOSED: [2017-12-21 Thu 22:25]
+#+BEGIN_EXAMPLE
+(sine 12.15)
+(p (sine 4.05))
+(p (p (sine 1.35)))
+(p (p (p (sine 0.45))))
+(p (p (p (p (sine 0.15)))))
+(p (p (p (p (p (sine 0.05))))))
+(p (p (p (p (p 0.05)))))
+...
+#+END_EXAMPLE
+~p~ will be called 5 times.
+
+Notice that if we triple the angle we are calling ~sine~ with, it will only add one additional call to ~p~, because we are dividing at every step of the recursive process. This makes it so the order of growth for both time (steps) and space is ~O(log n)~.
 *** TODO Exercise 1.16
 *** TODO Exercise 1.17
 *** TODO Exercise 1.18
