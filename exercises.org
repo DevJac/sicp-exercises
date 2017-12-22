@@ -1,8 +1,8 @@
-* SICP [11/356] [3%]
+* SICP [12/356] [3%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
-** Chapter 1 [11/46] [23%]
+** Chapter 1 [12/46] [26%]
 *** DONE Exercise 1.1
 CLOSED: [2017-12-17 Sun 22:11]
 The expected outputs are:
@@ -219,7 +219,47 @@ CLOSED: [2017-12-21 Thu 14:05]
     ))
 #+END_SRC
 *** TODO Exercise 1.13
-*** TODO Exercise 1.14
+*** DONE Exercise 1.14
+CLOSED: [2017-12-21 Thu 17:50]
+#+BEGIN_SRC scheme
+(define (coin n)
+  (cond
+    ((= n 1) 1)
+    ((= n 2) 5)
+    ((= n 3) 10)
+    ((= n 4) 25)
+    ((= n 5) 50)
+    ))
+
+(define (change n)
+  (define (change-iter n c)
+    (cond
+      ((< n 0) 0)
+      ((= n 0) 1)
+      ((> c 5) 0)
+      (else (+ (change-iter n (inc c)) (change-iter (- n (coin c)) c)))
+      )
+    )
+  (change-iter n 1)
+  )
+#+END_SRC
+I implemented the change function as above.
+
+To explore the process of making change for 11 cents:
+#+BEGIN_EXAMPLE scheme
+                   (c 11 1)
+(+        (c 11 2)             (c 10 1))
+(+ (+ (c 11 3) (c 6 2)) (+ (c 10 2) (c 9 1)))
+#+END_EXAMPLE
+Above is the beginning of a sketch of the recursive process.
+
+The space complexity is ~O(n)~ like most tree recursive processes, only the nodes of the current path need to be kept in memory.
+
+The time complexity is ~O(n^5)~ because there are 5 kinds of coins. Consider:
+
+If we only had 1 kind of coin, it would be straight counting (by the value of that one coin) up to the number of cents we need to make change for. This would be an ~O(n)~ process.
+If we had 2 kinds of coins, we would do straight counting by the first coin (~O(n)~), but *for each step* in the counting we would have to count out the remainder from the first coin using the second coin (this counting of the remainder would be ~O(n)~). Combine the two different counts and we get ~O(n^2)~.
+Continuing with this logic we eventually get ~O(n^5)~ for the complexity when using all 5 coins.
 *** TODO Exercise 1.15
 *** TODO Exercise 1.16
 *** TODO Exercise 1.17
