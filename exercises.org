@@ -1,8 +1,8 @@
-* SICP [16/356] [4%]
+* SICP [17/356] [4%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
-** Chapter 1 [16/46] [34%]
+** Chapter 1 [17/46] [36%]
 *** DONE Exercise 1.1
 CLOSED: [2017-12-17 Sun 22:11]
 The expected outputs are:
@@ -347,7 +347,83 @@ For the terminal case: ab + c = c where b = 0
 
 Notice that both the even and odd cases move us towards our terminal case.
 *** TODO Exercise 1.19
-*** TODO Exercise 1.20
+*** DONE Exercise 1.20
+CLOSED: [2017-12-23 Sat 21:31]
+First I will try to evaluate ~(gcd 206 40)~ using the substitution model with normal-order evaluation:
+
+#+BEGIN_EXAMPLE
+(gcd 206 40)
+(if (= 40 0) 206 (gcd 40 (remainder 206 40)))
+(if (= 40 0) 206 (if (= (remainder 206 40) 0) 40 (gcd (remainder 206 40) (remainder 40 (remainder 206 40)))))
+...
+#+END_EXAMPLE
+
+That is starting to get pretty incomprehensible.
+
+Let's look at the definition of gcd:
+
+#+BEGIN_SRC scheme
+(define (gcd a b)
+  (if (= b 0)
+      a
+      (gcd b (remainder a b))))
+#+END_SRC
+
+By looking at the definition, we can see that, under the substitution model with normal-order evaluation:
+- ~a~ gets evaluated once in all cases
+- ~b~ gets evaluated either 1 or 3 times, depending on the case
+- ~remainder~ gets evaluated either 0 or 1 times, depending on the case
+
+Let's look at a simpler case, using the substitution model with applicative-order evaluation:
+
+#+BEGIN_SRC scheme
+(gcd 206 40)
+(gcd 40 6)
+(gcd 6 4)
+(gcd 4 2)
+(gcd 2 0)
+#+END_SRC
+
+~remainder~ would be evaluated at the end of every call, except for the last call with applicative-order evaluation, so it would be called 4 times.
+
+When ~gcd~ receives some arguments, each of those arguments may require calling ~remainder~ zero or more times (under normal-order evaluation). Let ~A~ and ~B~ be the number of times ~remainder~ must be evaluated to get the value of ~a~ and ~b~ repectively.
+
+#+BEGIN_EXAMPLE
+f(A,B) = B + A                if B would evaluat to 0
+f(A,B) = B + f(B, 1 + A + B)  if B would not evaluate to 0
+
+(gcd 2 0)     (f 0 0)
+              (+ 0 0)
+              0
+
+(gcd 4 2)     (f 0 0)
+(gcd 2 0)     (+ 0 (f 0 1))
+              (+ 0 (+ 1 0))
+              1
+
+(gcd 6 4)     (f 0 0)
+(gcd 4 2)     (+ 0 (f 0 1))
+(gcd 2 0)     (+ 0 (+ 1 (f 1 2)))
+              (+ 0 (+ 1 (+ 2 1)))
+              4
+
+(gcd 40 6)    (f 0 0)
+(gcd 6 4)     (+ 0 (f 0 1))
+(gcd 4 2)     (+ 0 (+ 1 (f 1 2)))
+(gcd 2 0)     (+ 0 (+ 1 (+ 2 (f 2 4))))
+              (+ 0 (+ 1 (+ 2 (+ 4 2))))
+              9
+
+(gcd 206 40)  (f 0 0)
+(gcd 40 6)    (+ 0 (f 0 1))
+(gcd 6 4)     (+ 0 (+ 1 (f 1 2)))
+(gcd 4 2)     (+ 0 (+ 1 (+ 2 (f 2 4))))
+(gcd 2 0)     (+ 0 (+ 1 (+ 2 (+ 4 (f 4 7)))))
+              (+ 0 (+ 1 (+ 2 (+ 4 (+ 7 4)))))
+              18
+#+END_EXAMPLE
+
+18 calls to ~remainder~ are made with normal-order evaluation. Above is some loose notation that demonstrates this.
 *** TODO Exercise 1.21
 *** TODO Exercise 1.22
 *** TODO Exercise 1.23
