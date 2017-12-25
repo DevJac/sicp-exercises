@@ -1,8 +1,8 @@
-* SICP [17/356] [4%]
+* SICP [19/356] [5%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
-** Chapter 1 [17/46] [36%]
+** Chapter 1 [19/46] [41%]
 *** DONE Exercise 1.1
 CLOSED: [2017-12-17 Sun 22:11]
 The expected outputs are:
@@ -424,8 +424,70 @@ f(A,B) = B + f(B, 1 + A + B)  if B would not evaluate to 0
 #+END_EXAMPLE
 
 18 calls to ~remainder~ are made with normal-order evaluation. Above is some loose notation that demonstrates this.
-*** TODO Exercise 1.21
-*** TODO Exercise 1.22
+*** DONE Exercise 1.21
+CLOSED: [2017-12-24 Sun 19:23]
+#+BEGIN_EXAMPLE
+199
+1999
+7
+#+END_EXAMPLE
+*** DONE Exercise 1.22
+CLOSED: [2017-12-24 Sun 19:55]
+**** Code
+#+BEGIN_SRC scheme
+(define (square n) (* n n))
+(define (prime? n)
+  (= n (smallest-divisor n)))
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+        ((divides? test-divisor n) test-divisor)
+        (else (find-divisor n (+ test-divisor 1)))))
+(define (divides? a b) (= (remainder b a) 0))
+(define (smallest-divisor n) (find-divisor n 2))
+
+(define (timed-prime-test n)
+  (newline)
+  (display n)
+  (start-prime-test n (runtime)))
+(define (start-prime-test n start-time)
+  (if (prime? n)
+      (report-prime (- (runtime) start-time))))
+(define (report-prime elapsed-time)
+  (display " *** ")
+  (display elapsed-time))
+
+(define (even? n) (= (remainder n 2) 0))
+
+(define (search-for-primes start n)
+  (cond
+    ((= n 0) (newline))
+    ((even? start) (search-for-primes (inc start) n))
+    ((prime? start)
+     (timed-prime-test start)
+     (search-for-primes (+ 2 start) (dec n)))
+    (else (search-for-primes (+ 2 start) n))
+    ))
+#+END_SRC
+**** Timings
+#+BEGIN_EXAMPLE
+1009 *** 3
+1013 *** 3
+1019 *** 3
+
+10007 *** 8
+10009 *** 9
+10037 *** 9
+
+100003 *** 16
+100019 *** 16
+100043 *** 16
+
+1000003 *** 91
+1000033 *** 93
+1000037 *** 92
+#+END_EXAMPLE
+**** Thoughts
+As stated in the exercise, each set of timings should be about =sqrt(10)= times longer than the prior set of timings. This appears to be the case, with the exception of the primes above 100,000 which were faster than expected. The timings vary from run to run by a factor of 2 or 3, but it looks like the expected order of growth is within an order of magnitude of the actual times.
 *** TODO Exercise 1.23
 *** TODO Exercise 1.24
 *** TODO Exercise 1.25
