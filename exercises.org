@@ -1,8 +1,8 @@
-* SICP [24/356] [6%]
+* SICP [25/356] [7%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
-** Chapter 1 [24/46] [52%]
+** Chapter 1 [25/46] [54%]
 *** DONE Exercise 1.1
 CLOSED: [2017-12-17 Sun 22:11]
 The expected outputs are:
@@ -777,7 +777,67 @@ scratch.rkt﻿> (fermat-test 1105)
 This code shows that, for the primes tested, every ~a < n~ does pass the Fermat test. It also show that numbers like ~1105~, which is obviously not prime, also pases the Fermat test for all ~a < n~.
 
 This demonstrates the existence of Carmichael numbers as requested in the exercise.
-*** TODO Exercise 1.28
+*** DONE Exercise 1.28
+CLOSED: [2017-12-27 Wed 23:14]
+**** Code
+#+BEGIN_SRC scheme
+(define (fast-prime? n times)
+  (cond ((= times 0) true)
+        ((miller-rabin n) (fast-prime? n (- times 1)))
+        (else false)))
+
+(define (miller-rabin n)
+  (define a (+ 1 (random (- n 1))))
+  (= (expmod a (dec n) n) 1)
+  )
+
+(define (expmod base exp m)
+  (cond ((= exp 0) 1)
+        ((even? exp)
+         (remainder
+          (square (expmod base (/ exp 2) m))
+          m))
+        (else
+         (remainder
+          (* base (expmod base (- exp 1) m))
+          m))))
+
+(define (square n) (* n n))
+#+END_SRC
+**** Thoughts
+I tested the modified version of ~fast-prime?~ and couldn't find any case in which it failed. It correctly identified all of the Carmichael numbers as non-prime.
+
+I did modify ~expmod~ as asked in the exercise. It called ~expmod~ recursively twice at each step of the recursion, which is inefficient, but it worked. The whole part about modifying ~expmod~ was confusing; I think it only asked for the modification to facilitate a mathematical proof, but everything seems to work even without the modification. My modification to ~expmod~ was inspired by a solution I found online.
+**** Modified ~expmod~
+#+BEGIN_SRC scheme
+(define (fast-prime? n times)
+  (cond ((= times 0) true)
+        ((miller-rabin n) (fast-prime? n (- times 1)))
+        (else false)))
+
+(define (miller-rabin n)
+  (define a (+ 1 (random (- n 1))))
+  (= (expmod a (dec n) n) 1)
+  )
+
+(define (non-trivial-sqrt? n m)
+  (cond ((= n 1) false)
+        ((= n (- m 1)) false)
+        (else (= (remainder (square n) m) 1))
+        ))
+
+(define (expmod base exp m)
+  (cond ((= exp 0) 1)
+        ((even? exp)
+         (if (non-trivial-sqrt? (expmod base (/ exp 2) m) m) 0 (remainder (square (expmod base (/ exp 2) m)) m))
+         )
+        (else
+         (remainder
+          (* base (expmod base (- exp 1) m))
+          m))))
+
+(define (square n) (* n n))
+#+END_SRC
 *** TODO Exercise 1.29
 *** TODO Exercise 1.30
 *** TODO Exercise 1.31
