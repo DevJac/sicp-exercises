@@ -1,8 +1,8 @@
-* SICP [25/356] [7%]
+* SICP [26/356] [7%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
-** Chapter 1 [25/46] [54%]
+** Chapter 1 [26/46] [56%]
 *** DONE Exercise 1.1
 CLOSED: [2017-12-17 Sun 22:11]
 The expected outputs are:
@@ -838,7 +838,90 @@ I did modify ~expmod~ as asked in the exercise. It called ~expmod~ recursively t
 
 (define (square n) (* n n))
 #+END_SRC
-*** TODO Exercise 1.29
+**** Further Improvements
+#+BEGIN_SRC scheme
+(define (fast-prime? n times)
+  (cond ((= times 0) true)
+        ((miller-rabin n) (fast-prime? n (- times 1)))
+        (else false)))
+
+(define (miller-rabin n)
+  (define a (+ 1 (random (- n 1))))
+  (= (expmod a (dec n) n) 1)
+  )
+
+(define (non-trivial-sqrt? n m)
+  (cond ((= n 1) false)
+        ((= n (- m 1)) false)
+        (else (= (remainder (square n) m) 1))
+        ))
+
+(define (check-non-trivial-sqrt n m)
+  (if (non-trivial-sqrt? n m) 0 (remainder (square n) m))
+  )
+
+(define (expmod base exp m)
+  (cond ((= exp 0) 1)
+        ((even? exp) (check-non-trivial-sqrt (expmod base (/ exp 2) m) m))
+        (else
+         (remainder
+          (* base (expmod base (- exp 1) m))
+          m))))
+
+(define (square n) (* n n))
+#+END_SRC
+
+#+BEGIN_EXAMPLE
+scratch.rkt﻿> (fast-prime? 561 100)
+#f
+scratch.rkt﻿> (fast-prime? 1105 100)
+#f
+scratch.rkt﻿> (fast-prime? 2821 100)
+#f
+scratch.rkt﻿> (fast-prime? 7043 100)
+#t
+scratch.rkt﻿> (fast-prime? 7047 100)
+#f
+scratch.rkt﻿> (fast-prime? 7057 100)
+#t
+#+END_EXAMPLE
+
+I made the above improvement to avoid calculating ~expmod~ twice each iteration. It seems to work, and it not fooled by the Carmichael numbers.
+*** DONE Exercise 1.29
+CLOSED: [2017-12-29 Fri 16:15]
+**** Code
+#+BEGIN_SRC scheme
+(define (cube n) (* n n n))
+
+(define (even? n) (= (remainder n 2) 0))
+
+(define (simpson f a b n)
+  (define h (/ (- b a) n))
+  (define (y k) (f (+ a (* k h))))
+  (define (y-index-factor y-index)
+    (cond ((= y-index 0) 1)
+          ((= y-index n) 1)
+          ((even? y-index) 2)
+          (else 4)
+          ))
+  (define (simpson-sum y-index sum)
+    (cond ((> y-index n) sum)
+          (else (simpson-sum (inc y-index) (+ sum (* (y-index-factor y-index) (y y-index)))))
+          ))
+  (* (/ h 3) (simpson-sum 0 0))
+  )
+#+END_SRC
+**** Demo
+#+BEGIN_EXAMPLE
+scratch.rkt﻿> (simpson cube 0.0 1.0 100)
+0.25000000000000006
+scratch.rkt﻿> (simpson cube 0.0 1.0 1000)
+0.25000000000000006
+#+END_EXAMPLE
+**** Thoughts
+The code appears to work. It does not appear to get any more or less accurate when increasing ~n~, at least not for the integral of ~cube~ from 0 to 1.
+
+It is more accurate than the ~integral~ procedure defined on page 79.
 *** TODO Exercise 1.30
 *** TODO Exercise 1.31
 *** TODO Exercise 1.32
