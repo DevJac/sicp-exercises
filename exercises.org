@@ -1,8 +1,8 @@
-* SICP [26/356] [7%]
+* SICP [28/356] [7%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
-** Chapter 1 [26/46] [56%]
+** Chapter 1 [28/46] [60%]
 *** DONE Exercise 1.1
 CLOSED: [2017-12-17 Sun 22:11]
 The expected outputs are:
@@ -922,8 +922,44 @@ scratch.rkt﻿> (simpson cube 0.0 1.0 1000)
 The code appears to work. It does not appear to get any more or less accurate when increasing ~n~, at least not for the integral of ~cube~ from 0 to 1.
 
 It is more accurate than the ~integral~ procedure defined on page 79.
-*** TODO Exercise 1.30
-*** TODO Exercise 1.31
+*** DONE Exercise 1.30
+CLOSED: [2018-01-01 Mon 11:21]
+#+BEGIN_SRC scheme
+(define (sum term a next b)
+  (define (iter a result)
+    (if (> a b)
+        result
+        (iter (next a) (+ (term a) result))))
+  (iter a 0))
+#+END_SRC
+*** DONE Exercise 1.31
+CLOSED: [2018-01-01 Mon 15:59]
+#+BEGIN_SRC scheme
+(define (id a) a)
+
+(define (product-iter term a next b)
+  (define (iter a result)
+    (if (> a b)
+        result
+        (iter (next a) (* (term a) result))))
+  (iter a 1))
+
+(define (product-recursive term a next b)
+  (if (> a b)
+      1
+      (* (term a)
+         (product-recursive term (next a) next b))))
+
+(define (factorial n)
+  (product-recursive id 1 inc n))
+
+(define (add-2 n) (+ 2 n))
+(define (pi-approx-term n)
+  (* (/ n (+ 1 n)) (/ (+ 2 n) (+ 1 n))))
+(* 4 (product-iter pi-approx-term 2.0 add-2 2.0))
+(* 4 (product-iter pi-approx-term 2.0 add-2 20.0))
+(* 4 (product-iter pi-approx-term 2.0 add-2 2000.0))
+#+END_SRC
 *** TODO Exercise 1.32
 *** TODO Exercise 1.33
 *** TODO Exercise 1.34
