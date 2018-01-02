@@ -1,8 +1,8 @@
-* SICP [28/356] [7%]
+* SICP [30/356] [8%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
-** Chapter 1 [28/46] [60%]
+** Chapter 1 [30/46] [65%]
 *** DONE Exercise 1.1
 CLOSED: [2017-12-17 Sun 22:11]
 The expected outputs are:
@@ -960,8 +960,78 @@ CLOSED: [2018-01-01 Mon 15:59]
 (* 4 (product-iter pi-approx-term 2.0 add-2 20.0))
 (* 4 (product-iter pi-approx-term 2.0 add-2 2000.0))
 #+END_SRC
-*** TODO Exercise 1.32
-*** TODO Exercise 1.33
+*** DONE Exercise 1.32
+CLOSED: [2018-01-01 Mon 16:53]
+#+BEGIN_SRC scheme
+(define (id a) a)
+
+(define (accumulate-iter combiner null-value term a next b)
+  (define (iter a result)
+    (if (> a b)
+        result
+        (iter (next a) (combiner (term a) result))))
+  (iter a null-value))
+
+(define (accumulate-recursive combiner null-value term a next b)
+  (if (> a b)
+      null-value
+      (combiner (term a)
+                (accumulate-recursive combiner null-value term (next a) next b))))
+
+(define (add-2 n) (+ 2 n))
+(define (pi-approx-term n)
+  (* (/ n (+ 1 n)) (/ (+ 2 n) (+ 1 n))))
+(* 4 (accumulate-iter * 1 pi-approx-term 2.0 add-2 2.0))
+(* 4 (accumulate-iter * 1 pi-approx-term 2.0 add-2 20.0))
+(* 4 (accumulate-iter * 1 pi-approx-term 2.0 add-2 2000.0))
+(accumulate-recursive + 0 id 1 inc 10)
+#+END_SRC
+*** DONE Exercise 1.33
+CLOSED: [2018-01-01 Mon 17:34]
+**** Code
+#+BEGIN_SRC scheme
+(define (id a) a)
+
+(define (square n) (* n n))
+
+(define (gcd a b)
+  (if (= b 0)
+      a
+      (gcd b (remainder a b))))
+
+(define (prime? n)
+  (= n (smallest-divisor n)))
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+        ((divides? test-divisor n) test-divisor)
+        (else (find-divisor n (+ test-divisor 1)))))
+(define (divides? a b) (= (remainder b a) 0))
+(define (smallest-divisor n) (find-divisor n 2))
+
+(define (filter-accumulate combiner null-value term a next b filter)
+  (define (iter a result) (iter-w-term a result (term a)))
+  (define (iter-w-term a result evaled-term)
+    (cond ((> a b) result)
+          ((filter evaled-term) (iter (next a) (combiner evaled-term result)))
+          (else (iter (next a) result))
+          ))
+  (iter a null-value))
+
+(define (sum-of-squares-of-primes a b)
+  (define (f a) (prime? (sqrt a)))
+  (filter-accumulate + 0 square a inc b f)
+  )
+
+(define (product-of-relatively-prime n)
+  (define (relatively-prime? i) (= 1 (gcd i n)))
+  (filter-accumulate * 1 id 1 inc n relatively-prime?)
+  )
+
+(sum-of-squares-of-primes 0 10)
+(product-of-relatively-prime 10)
+#+END_SRC
+**** Thoughts
+I find it interesting how I avoided calculating ~(term a)~ twice in ~filter-accumulate~. There is ~iter~ and ~iter-w-term~, ~iter~ is just a wrapper around ~iter-w-term~ to evaluate ~(term a)~ before calling ~iter-w-term~. ~iter-w-term~ then uses the calculated value of ~(term a)~ twice. This should still be an iterative process (it can be tail-call-optimized), since there are no operations left to be done on the stack whenever ~iter~ or ~iter-w-term~ are called.
 *** TODO Exercise 1.34
 *** TODO Exercise 1.35
 *** TODO Exercise 1.36
