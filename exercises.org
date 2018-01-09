@@ -1,8 +1,8 @@
-* SICP [35/356] [9%]
+* SICP [36/356] [10%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
-** Chapter 1 [35/46] [76%]
+** Chapter 1 [36/46] [78%]
 *** DONE Exercise 1.1
 CLOSED: [2017-12-17 Sun 22:11]
 The expected outputs are:
@@ -1260,7 +1260,34 @@ CLOSED: [2018-01-04 Thu 23:43]
 #+END_SRC
 
 I used the procedures I created in exercise 1.37. The ~d~ function was a little tricky to come up with.
-*** TODO Exercise 1.39
+*** DONE Exercise 1.39
+CLOSED: [2018-01-08 Mon 22:17]
+#+BEGIN_SRC scheme
+(define (square n) (* n n))
+
+(define (cont-frac n d k)
+  (define (iter l result)
+    (cond ((= l 0) result)
+          (else (iter
+                 (dec l)
+                 (/ (n l)
+                    (+ (d l) result))))
+          ))
+  (iter k 0)
+  )
+
+(define (tan x k)
+  (cont-frac
+   (lambda (k) (if (= k 1) x (- (square x))))
+   (lambda (k) (- (* 2 k) 1))
+   k)
+  )
+
+(tan 1.0 100)
+(tan 2.0 100)
+#+END_SRC
+
+I made a mistake while arriving at this solution: ~cont-frac~ is designed to add terms in the denominators, but the formula in exercise 1.39 uses subtraction in the denominators. Of course, it's easy to achieve subtraction by adding negatives, which is what I did with ~(- (square x))~ in the code.
 *** TODO Exercise 1.40
 *** TODO Exercise 1.41
 *** TODO Exercise 1.42
