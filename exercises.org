@@ -1,8 +1,8 @@
-* SICP [40/356] [11%]
+* SICP [42/356] [11%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
-** Chapter 1 [40/46] [86%]
+** Chapter 1 [42/46] [91%]
 *** DONE Exercise 1.1
 CLOSED: [2017-12-17 Sun 22:11]
 The expected outputs are:
@@ -1355,8 +1355,85 @@ CLOSED: [2018-01-10 Wed 22:30]
 
 ((repeated square 2) 5)
 #+END_SRC
-*** TODO Exercise 1.44
-*** TODO Exercise 1.45
+*** DONE Exercise 1.44
+CLOSED: [2018-01-10 Wed 22:45]
+#+BEGIN_SRC scheme
+(define (compose f g)
+  (lambda (x) (f (g x)))
+  )
+
+(define (repeated f n)
+  (cond ((= n 1) (lambda (x) (f x)))
+        (else (compose (repeated f (dec n)) f))
+        ))
+
+(define (smooth f dx)
+  (lambda (x) (/ (+
+                  (f x)
+                  (f (+ x dx))
+                  (f (- x dx))
+                  )
+                 3))
+  )
+
+(((repeated (lambda (f) (smooth f 0.01)) 10) floor) 2.6)
+(((repeated (lambda (f) (smooth f 0.01)) 10) floor) 2.7)
+(((repeated (lambda (f) (smooth f 0.01)) 10) floor) 2.8)
+(((repeated (lambda (f) (smooth f 0.01)) 10) floor) 2.9)
+(((repeated (lambda (f) (smooth f 0.01)) 10) floor) 2.95)
+(((repeated (lambda (f) (smooth f 0.01)) 10) floor) 3.0)
+(((repeated (lambda (f) (smooth f 0.01)) 10) floor) 3.01)
+(((repeated (lambda (f) (smooth f 0.01)) 10) floor) 3.09)
+(((repeated (lambda (f) (smooth f 0.01)) 10) floor) 3.1)
+#+END_SRC
+*** DONE Exercise 1.45
+CLOSED: [2018-01-13 Sat 22:18]
+#+BEGIN_SRC scheme
+(define tolerance 0.00001)
+(define (fixed-point f first-guess)
+  (define (close-enough? v1 v2)
+    (< (abs (- v1 v2))
+       tolerance))
+  (define (try guess)
+    (let ((next (f guess)))
+      (if (close-enough? guess next)
+          next
+          (try next))))
+  (try first-guess))
+
+(define (average a b) (/ (+ a b) 2))
+
+(define (average-damp f)
+  (lambda (x) (average x (f x))))
+
+(define (compose f g)
+  (lambda (x) (f (g x)))
+  )
+
+(define (repeated f n)
+  (cond ((= n 1) (lambda (x) (f x)))
+        (else (compose (repeated f (dec n)) f))
+        ))
+
+(define (log-base n b) (/ (log n) (log b)))
+
+(define (nth-root n r)
+  (let ((required-damps (floor (log-base r 2))))
+    (fixed-point ((repeated average-damp required-damps) (lambda (x) (/ n (expt x (dec r))))) 2.0)
+    )
+  )
+
+(nth-root (expt 5 2) 2)
+(nth-root (expt 5 3) 3)
+(nth-root (expt 5 4) 4)
+(nth-root (expt 5 5) 5)
+(nth-root (expt 5 6) 6)
+(nth-root (expt 5 7) 7)
+(nth-root (expt 5 8) 8)
+(nth-root (expt 5 9) 9)
+#+END_SRC
+
+The number of damps required is log (base 2) of the root.
 *** TODO Exercise 1.46
 ** Chapter 2 [0/97] [0%]
 *** TODO Exercise 2.1
