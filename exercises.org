@@ -1,4 +1,4 @@
-* SICP [42/356] [11%]
+* SICP [43/356] [12%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
@@ -1435,8 +1435,56 @@ CLOSED: [2018-01-13 Sat 22:18]
 
 The number of damps required is log (base 2) of the root.
 *** TODO Exercise 1.46
-** Chapter 2 [0/97] [0%]
-*** TODO Exercise 2.1
+** Chapter 2 [1/97] [1%]
+*** DONE Exercise 2.1
+CLOSED: [2018-01-14 Sun 22:38]
+#+BEGIN_SRC scheme
+(define (gcd a b)
+  (if (= b 0)
+      a
+      (gcd b (remainder a b))))
+
+(define (add-rat x y)
+  (make-rat (+ (* (numer x) (denom y))
+               (* (numer y) (denom x)))
+            (* (denom x) (denom y))))
+(define (sub-rat x y)
+  (make-rat (- (* (numer x) (denom y))
+               (* (numer y) (denom x)))
+            (* (denom x) (denom y))))
+(define (mul-rat x y)
+  (make-rat (* (numer x) (numer y))
+            (* (denom x) (denom y))))
+(define (div-rat x y)
+  (make-rat (* (numer x) (denom y))
+            (* (denom x) (numer y))))
+(define (equal-rat? x y)
+  (= (* (numer x) (denom y))
+     (* (numer y) (denom x))))
+(define (numer x) (car x))
+(define (denom x) (cdr x))
+
+(define (print-rat x)
+  (display (numer x))
+  (display " / ")
+  (display (denom x))
+  (newline))
+
+(define (make-rat n d)
+  (cond ((< d 0) (make-rat (* -1 n) (* -1 d)))
+        (else (let
+                  ((g (gcd (abs n) (abs d))))
+                (cons (/ n g) (/ d g))
+                ))
+        )
+  )
+
+(print-rat (make-rat 1 2))
+(print-rat (make-rat -1 2))
+(print-rat (make-rat 1 -2))
+(print-rat (make-rat -1 -2))
+#+END_SRC
+The ~gcd~ function didn't handle negative numbers the way I expected. I had to work around it by using ~abs~.
 *** TODO Exercise 2.2
 *** TODO Exercise 2.3
 *** TODO Exercise 2.4
