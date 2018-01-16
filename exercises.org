@@ -1,4 +1,4 @@
-* SICP [43/356] [12%]
+* SICP [45/356] [12%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
@@ -1435,7 +1435,7 @@ CLOSED: [2018-01-13 Sat 22:18]
 
 The number of damps required is log (base 2) of the root.
 *** TODO Exercise 1.46
-** Chapter 2 [1/97] [1%]
+** Chapter 2 [3/97] [3%]
 *** DONE Exercise 2.1
 CLOSED: [2018-01-14 Sun 22:38]
 #+BEGIN_SRC scheme
@@ -1485,8 +1485,88 @@ CLOSED: [2018-01-14 Sun 22:38]
 (print-rat (make-rat -1 -2))
 #+END_SRC
 The ~gcd~ function didn't handle negative numbers the way I expected. I had to work around it by using ~abs~.
-*** TODO Exercise 2.2
-*** TODO Exercise 2.3
+*** DONE Exercise 2.2
+CLOSED: [2018-01-15 Mon 21:36]
+#+BEGIN_SRC scheme
+(define (make-point x y) (cons x y))
+(define (x-point point) (car point))
+(define (y-point point) (cdr point))
+
+(define (make-segment a b) (cons a b))
+(define (start-point segment) (car segment))
+(define (end-point segment) (cdr segment))
+
+(define (print-point p)
+  (display "(")
+  (display (x-point p))
+  (display ", ")
+  (display (y-point p))
+  (display ")")
+  (newline)
+  )
+
+(define (average a b) (/ (+ a b) 2))
+
+(define (midpoint segment)
+  (make-point
+   (average (x-point (start-point segment)) (x-point (end-point segment)))
+   (average (y-point (start-point segment)) (y-point (end-point segment)))
+   )
+  )
+
+(print-point (midpoint (make-segment (make-point 2.0 2.0) (make-point 4.0 11.0))))
+#+END_SRC
+*** DONE Exercise 2.3
+CLOSED: [2018-01-15 Mon 22:21]
+First version:
+#+BEGIN_SRC scheme
+(define (make-point x y) (cons x y))
+(define (x-point point) (car point))
+(define (y-point point) (cdr point))
+
+(define (make-rectangle a b) (cons a b))
+(define (lower-left r) (car r))
+(define (upper-right r) (cdr r))
+(define (height r) (abs (- (y-point (lower-left r)) (y-point (upper-right r)))))
+(define (width r) (abs (- (x-point (lower-left r)) (x-point (upper-right r)))))
+
+(define (perimeter r) (+ (* 2 (height r)) (* 2 (width r))))
+(define (area r) (* (height r) (width r)))
+
+(define test-rectangle (make-rectangle (make-point 1 1) (make-point 5 7)))
+(height test-rectangle)
+(area test-rectangle)
+#+END_SRC
+
+Second version:
+#+BEGIN_SRC scheme
+(define (make-point x y) (cons x y))
+(define (x-point point) (car point))
+(define (y-point point) (cdr point))
+
+(define (make-width-height w h) (cons (abs w) (abs h)))
+(define (hw-height hw) (cdr hw))
+(define (hw-width hw) (car hw))
+
+(define (make-rectangle lower-left width-height) (cons lower-left width-height))
+(define (lower-left r) (car r))
+(define (upper-right r) (make-point (+ (x-point (lower-left r)) (width r)) (+ (y-point (lower-left r)) (height r))))
+(define (height r) (hw-height (cdr r)))
+(define (width r) (hw-width (cdr r)))
+
+(define (perimeter r) (+ (* 2 (height r)) (* 2 (width r))))
+(define (area r) (* (height r) (width r)))
+
+(define test-rectangle (make-rectangle (make-point 1 1) (make-width-height 5 7)))
+(height test-rectangle)
+(area test-rectangle)
+#+END_SRC
+
+I did not have to change the ~perimeter~ or ~area~ procedures, but only because I had the ~height~ and ~width~ procedures defined for the rectangle. I wasn't originally planning to implement ~height~ and ~width~ for the rectangle; when thinking of just the rectangle I figured people could write code to calculate the height/width on the own if the needed, but I wouldn't need those functions right away. Then it turned out that height/width were very useful for abstracting the perimeter and area.
+
+This is obviously a trivial case for demonstrative purposes, but I wonder in more complicated cases, how can you anticipate what utility functions (or "methods" in an OOP language) are needed for unknown future use cases? Sure, you could just wrap the implementation with getters and setters, which would allow you to change the implementation while maintaining the interface, but getters are setters don't help you move to a higher level of abstraction. I don't think there is a simple answer to this problem.
+
+I haven't given much specific thought to how various programming language organize and enforce layers of abstraction. It's something I need to keep in mind.
 *** TODO Exercise 2.4
 *** TODO Exercise 2.5
 *** TODO Exercise 2.6
