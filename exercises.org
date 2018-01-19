@@ -1,4 +1,4 @@
-* SICP [45/356] [12%]
+* SICP [47/356] [13%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
@@ -1435,7 +1435,7 @@ CLOSED: [2018-01-13 Sat 22:18]
 
 The number of damps required is log (base 2) of the root.
 *** TODO Exercise 1.46
-** Chapter 2 [3/97] [3%]
+** Chapter 2 [5/97] [5%]
 *** DONE Exercise 2.1
 CLOSED: [2018-01-14 Sun 22:38]
 #+BEGIN_SRC scheme
@@ -1567,8 +1567,53 @@ I did not have to change the ~perimeter~ or ~area~ procedures, but only because 
 This is obviously a trivial case for demonstrative purposes, but I wonder in more complicated cases, how can you anticipate what utility functions (or "methods" in an OOP language) are needed for unknown future use cases? Sure, you could just wrap the implementation with getters and setters, which would allow you to change the implementation while maintaining the interface, but getters are setters don't help you move to a higher level of abstraction. I don't think there is a simple answer to this problem.
 
 I haven't given much specific thought to how various programming language organize and enforce layers of abstraction. It's something I need to keep in mind.
-*** TODO Exercise 2.4
-*** TODO Exercise 2.5
+*** DONE Exercise 2.4
+CLOSED: [2018-01-16 Tue 21:10]
+#+BEGIN_SRC scheme
+(define (cons x y)
+  (lambda (m) (m x y)))
+(define (car z)
+  (z (lambda (p q) p)))
+(define (cdr z)
+  (z (lambda (p q) q)))
+
+(define x (cons 1 2))
+(car x)
+(cdr x)
+#+END_SRC
+
+Using substitution:
+#+BEGIN_EXAMPLE
+(car (cons x y))
+(car (lambda (m) (m x y)))
+((lambda (m) (m x y)) (lambda (p q) p))
+((lambda (p q) p) x y)
+x
+#+END_EXAMPLE
+
+The examples in the text and in this exercise are both beautiful examples of the power of procedure application and lexical scoping. I had not thought of this use for procedures before.
+*** DONE Exercise 2.5
+CLOSED: [2018-01-18 Thu 21:50]
+#+BEGIN_SRC scheme
+(define (assert-eq a b) (cond ((not (= a b)) (error "assertion failed"))))
+
+(define (div-count d n)
+  (define (iter d n dc)
+    (if (= (remainder n d) 0) (iter d (/ n d) (inc dc)) dc)
+    )
+  (iter d n 0)
+  )
+
+(assert-eq (div-count 2 8) 3)
+(assert-eq (div-count 3 8) 0)
+
+(define (cons a b) (* (expt 2 a) (expt 3 b)))
+(define (car n) (div-count 2 n))
+(define (cdr n) (div-count 3 n))
+
+(car (cons 8 3))
+(cdr (cons 8 3))
+#+END_SRC
 *** TODO Exercise 2.6
 *** TODO Exercise 2.7
 *** TODO Exercise 2.8
