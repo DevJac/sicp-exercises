@@ -1,4 +1,4 @@
-* SICP [47/356] [13%]
+* SICP [49/356] [13%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
@@ -1435,7 +1435,7 @@ CLOSED: [2018-01-13 Sat 22:18]
 
 The number of damps required is log (base 2) of the root.
 *** TODO Exercise 1.46
-** Chapter 2 [5/97] [5%]
+** Chapter 2 [7/97] [7%]
 *** DONE Exercise 2.1
 CLOSED: [2018-01-14 Sun 22:38]
 #+BEGIN_SRC scheme
@@ -1615,8 +1615,60 @@ CLOSED: [2018-01-18 Thu 21:50]
 (cdr (cons 8 3))
 #+END_SRC
 *** TODO Exercise 2.6
-*** TODO Exercise 2.7
-*** TODO Exercise 2.8
+*** DONE Exercise 2.7
+CLOSED: [2018-01-19 Fri 16:59]
+#+BEGIN_SRC scheme
+(define (add-interval x y)
+  (make-interval (+ (lower-bound x) (lower-bound y))
+                 (+ (upper-bound x) (upper-bound y))))
+(define (mul-interval x y)
+  (let ((p1 (* (lower-bound x) (lower-bound y)))
+        (p2 (* (lower-bound x) (upper-bound y)))
+        (p3 (* (upper-bound x) (lower-bound y)))
+        (p4 (* (upper-bound x) (upper-bound y))))
+    (make-interval (min p1 p2 p3 p4)
+                   (max p1 p2 p3 p4))))
+(define (div-interval x y)
+  (mul-interval
+   x
+   (make-interval (/ 1.0 (upper-bound y))
+                  (/ 1.0 (lower-bound y)))))
+
+(define (make-interval a b) (cons a b))
+(define (lower-bound i) (car i))
+(define (upper-bound i) (cdr i))
+#+END_SRC
+*** DONE Exercise 2.8
+CLOSED: [2018-01-19 Fri 17:01]
+#+BEGIN_SRC scheme
+(define (add-interval x y)
+  (make-interval (+ (lower-bound x) (lower-bound y))
+                 (+ (upper-bound x) (upper-bound y))))
+(define (mul-interval x y)
+  (let ((p1 (* (lower-bound x) (lower-bound y)))
+        (p2 (* (lower-bound x) (upper-bound y)))
+        (p3 (* (upper-bound x) (lower-bound y)))
+        (p4 (* (upper-bound x) (upper-bound y))))
+    (make-interval (min p1 p2 p3 p4)
+                   (max p1 p2 p3 p4))))
+(define (div-interval x y)
+  (mul-interval
+   x
+   (make-interval (/ 1.0 (upper-bound y))
+                  (/ 1.0 (lower-bound y)))))
+
+(define (make-interval a b) (cons a b))
+(define (lower-bound i) (car i))
+(define (upper-bound i) (cdr i))
+
+(define (negate-interval i)
+  (make-interval (* -1 (upper-bound i)) (* -1 (lower-bound i)))
+  )
+
+(define (sub-interval a b) (add-interval a (negate-interval b)))
+#+END_SRC
+
+I defined interval subtraction in terms of addition. To subtract two intervals (~a - b~) you add the negation of ~b~ to ~a~.
 *** TODO Exercise 2.9
 *** TODO Exercise 2.10
 *** TODO Exercise 2.11
