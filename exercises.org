@@ -1,4 +1,4 @@
-* SICP [51/356] [14%]
+* SICP [53/356] [14%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
@@ -1435,7 +1435,7 @@ CLOSED: [2018-01-13 Sat 22:18]
 
 The number of damps required is log (base 2) of the root.
 *** TODO Exercise 1.46
-** Chapter 2 [9/97] [9%]
+** Chapter 2 [11/97] [11%]
 *** DONE Exercise 2.1
 CLOSED: [2018-01-14 Sun 22:38]
 #+BEGIN_SRC scheme
@@ -1738,8 +1738,93 @@ CLOSED: [2018-01-20 Sat 14:53]
 
 ~div-interval~ has been modified as requested in the exercise.
 *** TODO Exercise 2.11
-*** TODO Exercise 2.12
-*** TODO Exercise 2.13
+*** DONE Exercise 2.12
+CLOSED: [2018-01-20 Sat 21:20]
+#+BEGIN_SRC scheme
+(define (add-interval x y)
+  (make-interval (+ (lower-bound x) (lower-bound y))
+                 (+ (upper-bound x) (upper-bound y))))
+(define (mul-interval x y)
+  (let ((p1 (* (lower-bound x) (lower-bound y)))
+        (p2 (* (lower-bound x) (upper-bound y)))
+        (p3 (* (upper-bound x) (lower-bound y)))
+        (p4 (* (upper-bound x) (upper-bound y))))
+    (make-interval (min p1 p2 p3 p4)
+                   (max p1 p2 p3 p4))))
+(define (spans-zero? i)
+  (and (<= (lower-bound i) 0) (<= 0 (upper-bound i)))
+  )
+(define (div-interval x y)
+  (cond ((spans-zero? y) (error "division by zero; denominator interval contains zero"))
+        (else
+         (mul-interval
+          x
+          (make-interval (/ 1.0 (upper-bound y))
+                         (/ 1.0 (lower-bound y)))))))
+
+(define (make-interval a b) (cons a b))
+(define (lower-bound i) (car i))
+(define (upper-bound i) (cdr i))
+
+(define (negate-interval i)
+  (make-interval (* -1 (upper-bound i)) (* -1 (lower-bound i)))
+  )
+
+(define (sub-interval a b) (add-interval a (negate-interval b)))
+
+(define (make-center-width c w)
+  (make-interval (- c w) (+ c w)))
+(define (center i)
+  (/ (+ (lower-bound i) (upper-bound i)) 2))
+(define (width i)
+  (/ (- (upper-bound i) (lower-bound i)) 2))
+
+(define (make-center-percent c p)
+  (let ((w (* c p)))
+    (make-center-width c w)
+    )
+  )
+
+(define (percent i)
+  (/ (width i) (center i))
+  )
+
+(define i (make-center-percent 10 0.1))
+i
+(center i)
+(percent i)
+#+END_SRC
+
+~make-center-percent~ and ~percent~ are new procedures created for this exercise.
+*** DONE Exercise 2.13
+CLOSED: [2018-01-20 Sat 22:51]
+Rough proof:
+#+BEGIN_EXAMPLE
+The interval is centered around the center, obviously. Let's look at only the upper half of the interval.
+
+upper(a) = Ca + Ca*Ta
+where Ca is the center of a
+      Ta is the tolerance of a
+      upper(a) is the upper bound of the a interval
+
+Likewise for b:
+
+upper(b) = Cb + Cb*Tb
+
+upper(a*b) = Ca*Cb + Ca*Cb*Ta + Ca*Cb*Tb + Ca*Cb*Ta*Tb
+
+Let's ignore the last term, since Ta*Tb will be a very small number. So we have:
+
+upper(a*b) = Ca*Cb + Ca*Cb*Ta + Ca*Cb*Tb
+
+Factor out a Ca*Cb:
+
+upper(a*b) = Ca*Cb + (Ca*Cb)(Ta + Tb)
+
+Ca*Cb is the center of a*b, and as seen above, the new upper bound is the center multiplied by Ta + Tb. Compare the last upper(...) = ... formula with the first.
+
+Thus, the tolerance after multiplication is roughly Ta + Tb.
+#+END_EXAMPLE
 *** TODO Exercise 2.14
 *** TODO Exercise 2.15
 *** TODO Exercise 2.16
