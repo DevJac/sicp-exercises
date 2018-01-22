@@ -1,4 +1,4 @@
-* SICP [53/356] [14%]
+* SICP [55/356] [15%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
@@ -1435,7 +1435,7 @@ CLOSED: [2018-01-13 Sat 22:18]
 
 The number of damps required is log (base 2) of the root.
 *** TODO Exercise 1.46
-** Chapter 2 [11/97] [11%]
+** Chapter 2 [13/97] [13%]
 *** DONE Exercise 2.1
 CLOSED: [2018-01-14 Sun 22:38]
 #+BEGIN_SRC scheme
@@ -1825,8 +1825,24 @@ Ca*Cb is the center of a*b, and as seen above, the new upper bound is the center
 
 Thus, the tolerance after multiplication is roughly Ta + Tb.
 #+END_EXAMPLE
-*** TODO Exercise 2.14
-*** TODO Exercise 2.15
+*** DONE Exercise 2.14
+CLOSED: [2018-01-21 Sun 23:14]
+There are many simple algebraic formulas that do not hold with our system.
+
+(A + B) - B does not equal A. It's close, but not exact.
+
+A / A is not 1, it's close but not exact.
+
+I haven't worked out the exact problem with each or all of the mathematical operations, but it appears that they are not accurate, at least not in the way we're accustomed to in traditional math. It seems that the more mathematical operations performed the more inaccuracies in the result.
+*** DONE Exercise 2.15
+CLOSED: [2018-01-21 Sun 23:32]
+The second formula does result in a tighter error.
+
+Each operation involving an interval increases the amount of uncertainty in the overall calculation. This makes sense logically: if we take two uncertainties and then add them, the result must be at least as uncertain as the most uncertain input, and then more uncertain because of the other input. You cannot get less uncertainty by adding another uncertainty.
+
+As for which formula is "better", I don't know. We don't know what the correct answer is supposed to be. I doubt we even know how to define the correct answer given the algebraic uncertainties we've seen. We cannot know which algorithm is better when we do not know what the answer is supposed to be.
+
+It seems at least part of the problem is that we're using a formula (both formulas actually) which were developed using a different algebraic system. We can't expect some advanced formula to work perfectly when (A + B) - B = A doesn't even work.
 *** TODO Exercise 2.16
 *** TODO Exercise 2.17
 *** TODO Exercise 2.18
