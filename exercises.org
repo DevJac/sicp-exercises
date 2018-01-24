@@ -1852,6 +1852,12 @@ My idea for solving the issues with interval arithmetic would be to track the ce
 Another idea is to only use formulas which use each input interval once.
 
 Part of the problem with the first form of the parallel resistors formula is that it's not clear what the variables mean. We use the variable "R1" twice in the formula, but is R1 equal to R1? It depends on what R1 is representing. If R1 represents a physical resistor, then of course a resistor is equal to itself. But if R1 represents an interval of uncertainty, we cannot say that R1 is equal to R1. Let's consider a 6 sided dice, the dice can produce a range of values, like our intervals, and the outcome of the roll is uncertain. We cannot say that one roll of the dice will be equal to the next, even though both rolls use the same dice. Likewise, we cannot say that R1 is equal to R1 in a formula, because our systems considers R1 to be an uncertain interval, like the roll of a die. To get around this we can make sure to only use R1 once in the formula.
+**** Follow up plan
+I've given a few days thought to this problem, and came up with the following system I'd like to try. It is similar to what I described above.
+
+For each interval, track the center of the interval, and the lower and upper bounds. To run a formula on the intervals, first run the centers through the formula, this will be the center of the result. Then, try every possible permutation of lower and upper bounds for the other intervals (which will be ~O(n^2)~) and run those numbers through the formula, the minimum and maximum from all the permutations will be the lower and upper bounds of the result interval.
+
+I think this system might solve the problem in this exercise, and produce the same result for both forms of the parrallel resistor formula. The downside is it will be a ~O(n^2)~ process, where ~n~ is the number of input intervals to the formula.
 *** TODO Exercise 2.17
 *** TODO Exercise 2.18
 *** TODO Exercise 2.19
