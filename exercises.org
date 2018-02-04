@@ -1,4 +1,4 @@
-* SICP [56/356] [15%]
+* SICP [58/356] [16%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
@@ -1435,7 +1435,7 @@ CLOSED: [2018-01-13 Sat 22:18]
 
 The number of damps required is log (base 2) of the root.
 *** TODO Exercise 1.46
-** Chapter 2 [14/97] [14%]
+** Chapter 2 [16/97] [16%]
 *** DONE Exercise 2.1
 CLOSED: [2018-01-14 Sun 22:38]
 #+BEGIN_SRC scheme
@@ -1858,8 +1858,28 @@ I've given a few days thought to this problem, and came up with the following sy
 For each interval, track the center of the interval, and the lower and upper bounds. To run a formula on the intervals, first run the centers through the formula, this will be the center of the result. Then, try every possible permutation of lower and upper bounds for the other intervals (which will be ~O(n^2)~) and run those numbers through the formula, the minimum and maximum from all the permutations will be the lower and upper bounds of the result interval.
 
 I think this system might solve the problem in this exercise, and produce the same result for both forms of the parrallel resistor formula. The downside is it will be a ~O(n^2)~ process, where ~n~ is the number of input intervals to the formula.
-*** TODO Exercise 2.17
-*** TODO Exercise 2.18
+*** DONE Exercise 2.17
+CLOSED: [2018-02-04 Sun 13:48]
+#+BEGIN_SRC scheme
+(define (last-pair list)
+  (if (null? (cdr list)) list (last-pair (cdr list)))
+  )
+
+(last-pair (list 1 2 3 4 5))
+(last-pair (list 8))
+#+END_SRC
+*** DONE Exercise 2.18
+CLOSED: [2018-02-04 Sun 14:01]
+#+BEGIN_SRC scheme
+(define (reverse original)
+  (define (do original result)
+    (if (null? original) result (do (cdr original) (cons (car original) result)))
+    )
+  (do original (list))
+  )
+
+(reverse (list 1 2 3 4 5))
+#+END_SRC
 *** TODO Exercise 2.19
 *** TODO Exercise 2.20
 *** TODO Exercise 2.21
