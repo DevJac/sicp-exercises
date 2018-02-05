@@ -1,4 +1,4 @@
-* SICP [58/356] [16%]
+* SICP [60/356] [16%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
@@ -1435,7 +1435,7 @@ CLOSED: [2018-01-13 Sat 22:18]
 
 The number of damps required is log (base 2) of the root.
 *** TODO Exercise 1.46
-** Chapter 2 [16/97] [16%]
+** Chapter 2 [18/97] [18%]
 *** DONE Exercise 2.1
 CLOSED: [2018-01-14 Sun 22:38]
 #+BEGIN_SRC scheme
@@ -1880,8 +1880,61 @@ CLOSED: [2018-02-04 Sun 14:01]
 
 (reverse (list 1 2 3 4 5))
 #+END_SRC
-*** TODO Exercise 2.19
-*** TODO Exercise 2.20
+*** DONE Exercise 2.19
+CLOSED: [2018-02-04 Sun 16:29]
+#+BEGIN_SRC scheme
+(define (cc amount coin-values)
+  (cond ((= amount 0) 1)
+        ((or (< amount 0) (no-more? coin-values)) 0)
+        (else
+         (+ (cc amount
+                (except-first-denomination
+                 coin-values))
+            (cc (- amount
+                   (first-denomination
+                    coin-values))
+                coin-values)))))
+
+(define (first-denomination coin-values) (car coin-values))
+(define (except-first-denomination coin-values) (cdr coin-values))
+(define (no-more? coin-values) (null? coin-values))
+
+(define us-coins (list 50 25 10 5 1))
+(cc 100 us-coins)
+#+END_SRC
+
+Does the order of the list ~coin-values~ affect the answer produced by ~cc~? No, the order does not matter. The list represents a set of all available currencies, and thus the order does not matter. The algorithm is designed to treat the list as a set.
+
+As a quick review of how ~cc~ works, remember that it is "recursing" twice each call:
+- The first recursive call is reducing the number of available coins each call.
+- The second recursive call is reducing the amount each call.
+Both paths will converge.
+
+Note that having duplicate coin values in the list does break the ~cc~ algorithm. Although, it might be approprite for something like the US dollar, which has a paper and a coin version.
+*** DONE Exercise 2.20
+CLOSED: [2018-02-04 Sun 21:46]
+#+BEGIN_SRC scheme
+(define (reverse original)
+  (define (do original result)
+    (if (null? original) result (do (cdr original) (cons (car original) result)))
+    )
+  (do original (list))
+  )
+
+(define (same-parity a . bs)
+  (define (do bs result)
+    (cond ((null? bs) result)
+          ((= (remainder a 2) (remainder (car bs) 2)) (do (cdr bs) (cons (car bs) result)))
+          (else (do (cdr bs) result))
+          )
+    )
+  (reverse (do bs (list a)))
+  )
+
+(same-parity 1 2 3 4 5 6 7)
+#+END_SRC
+
+Is there a good way to do this without using ~reverse~? One call to ~reverse~ is still better than using ~append~ several times.
 *** TODO Exercise 2.21
 *** TODO Exercise 2.22
 *** TODO Exercise 2.23
