@@ -1,4 +1,4 @@
-* SICP [60/356] [16%]
+* SICP [63/356] [17%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
@@ -1435,7 +1435,7 @@ CLOSED: [2018-01-13 Sat 22:18]
 
 The number of damps required is log (base 2) of the root.
 *** TODO Exercise 1.46
-** Chapter 2 [18/97] [18%]
+** Chapter 2 [21/97] [21%]
 *** DONE Exercise 2.1
 CLOSED: [2018-01-14 Sun 22:38]
 #+BEGIN_SRC scheme
@@ -1935,9 +1935,42 @@ CLOSED: [2018-02-04 Sun 21:46]
 #+END_SRC
 
 Is there a good way to do this without using ~reverse~? One call to ~reverse~ is still better than using ~append~ several times.
-*** TODO Exercise 2.21
-*** TODO Exercise 2.22
-*** TODO Exercise 2.23
+*** DONE Exercise 2.21
+CLOSED: [2018-02-04 Sun 22:43]
+#+BEGIN_SRC scheme
+(define (square x) (* x x))
+
+(define (square-list-1 items)
+  (if (null? items)
+      nil
+      (cons
+       (square (car items)) (square-list-1 (cdr items)))))
+
+(define (square-list-2 items)
+  (map square items))
+
+(square-list-1 (list 1 2 4 5 6))
+(square-list-2 (list 1 2 4 5 6))
+#+END_SRC
+*** DONE Exercise 2.22
+CLOSED: [2018-02-06 Tue 22:09]
+The first version of ~square-list~ in the exercise produces the results in reverse order because ~things~ is consumed front to back, but ~answer~ is built back to front. Thus, the last item in ~things~ becomes the first item in ~answer~. ~cons~ prefixes (or "prepends") to the list.
+
+In the second version of ~square-list~ the arguments to ~cons~ are reversed. This will not work as desired. What you're building is not a traditional list. A list is built of nested pairs, where the first item in each pair is an element of the list, and the second item in each pair is more nested pairs (or ~nil~). In this case the first item in each pair is nested pairs and the second item is an element of the list. This is opposite of what you want.
+*** DONE Exercise 2.23
+CLOSED: [2018-02-06 Tue 22:21]
+#+BEGIN_SRC scheme
+(define (for-each proc items)
+  (cond ((not (null? items)) (proc (car items))
+                             (for-each proc (cdr items)))))
+
+(for-each (lambda (x)
+            (display x)
+            (newline))
+          (list 57 321 88))
+#+END_SRC
+
+Note, when ~items~ is null the result of the ~cond~ will be undefined which causes nothing to happen, but does not cause a crash. This is desirable, I think, although this behavior might be specific to the Racket SICP package I am using.
 *** TODO Exercise 2.24
 *** TODO Exercise 2.25
 *** TODO Exercise 2.26
