@@ -1,4 +1,4 @@
-* SICP [63/356] [17%]
+* SICP [67/356] [18%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
@@ -1435,7 +1435,7 @@ CLOSED: [2018-01-13 Sat 22:18]
 
 The number of damps required is log (base 2) of the root.
 *** TODO Exercise 1.46
-** Chapter 2 [21/97] [21%]
+** Chapter 2 [25/97] [25%]
 *** DONE Exercise 2.1
 CLOSED: [2018-01-14 Sun 22:38]
 #+BEGIN_SRC scheme
@@ -1971,10 +1971,72 @@ CLOSED: [2018-02-06 Tue 22:21]
 #+END_SRC
 
 Note, when ~items~ is null the result of the ~cond~ will be undefined which causes nothing to happen, but does not cause a crash. This is desirable, I think, although this behavior might be specific to the Racket SICP package I am using.
-*** TODO Exercise 2.24
-*** TODO Exercise 2.25
-*** TODO Exercise 2.26
-*** TODO Exercise 2.27
+*** DONE Exercise 2.24
+CLOSED: [2018-02-07 Wed 21:32]
+This exercise asks for drawings. I will do my best with ASCII art:
+#+BEGIN_EXAMPLE
+Printed by the interpreter:
+(1 (2 (3 4)))
+
+As a tree:
+
+           *
+         1   *
+           2   *
+             3   4
+
+As box and pointer:
+
+         [ 1 | v ]
+           [ v | nil ]
+         [ 2 | v ]
+           [ v | nil ]
+         [ 3 | v ]
+           [ 4 | nil ]
+#+END_EXAMPLE
+*** DONE Exercise 2.25
+CLOSED: [2018-02-07 Wed 21:43]
+Assuming ~x~ contains the nested list from the exercise.
+#+BEGIN_EXAMPLE
+(1 3 (5 7) 9)
+(car (cdr (car (cdr (cdr x)))))
+
+((7))
+(car (car x))
+
+(1 (2 (3 (4 (5 (6 7))))))
+(car (cdr (car (cdr (car (cdr (car (cdr (car (cdr (car (cdr x))))))))))))
+#+END_EXAMPLE
+*** DONE Exercise 2.26
+CLOSED: [2018-02-07 Wed 21:49]
+Assuming ~append~ is defined as in the text:
+#+BEGIN_SRC scheme
+(define (append list1 list2)
+  (if (null? list1)
+      list2
+      (cons (car list1) (append (cdr list1) list2))))
+#+END_SRC
+
+#+BEGIN_EXAMPLE
+(1 2 3 4 5 6)
+((1 2 3) 4 5 6)
+((1 2 3) (4 5 6))
+#+END_EXAMPLE
+*** DONE Exercise 2.27
+CLOSED: [2018-02-07 Wed 22:03]
+#+BEGIN_SRC scheme
+(define (deep-reverse original)
+  (define (do original result)
+    (cond ((null? original) result)
+          ((pair? (car original)) (do (cdr original) (cons (deep-reverse (car original)) result)))
+          (else (do (cdr original) (cons (car original) result)))
+          )
+    )
+  (do original (list))
+  )
+
+(deep-reverse (list 1 2 (list 3 4) 5 6))
+#+END_SRC
 *** TODO Exercise 2.28
 *** TODO Exercise 2.29
 *** TODO Exercise 2.30
