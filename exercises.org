@@ -1,4 +1,4 @@
-* SICP [67/356] [18%]
+* SICP [68/356] [19%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
@@ -1435,7 +1435,7 @@ CLOSED: [2018-01-13 Sat 22:18]
 
 The number of damps required is log (base 2) of the root.
 *** TODO Exercise 1.46
-** Chapter 2 [25/97] [25%]
+** Chapter 2 [26/97] [26%]
 *** DONE Exercise 2.1
 CLOSED: [2018-01-14 Sun 22:38]
 #+BEGIN_SRC scheme
@@ -1997,6 +1997,7 @@ As box and pointer:
 *** DONE Exercise 2.25
 CLOSED: [2018-02-07 Wed 21:43]
 Assuming ~x~ contains the nested list from the exercise.
+
 #+BEGIN_EXAMPLE
 (1 3 (5 7) 9)
 (car (cdr (car (cdr (cdr x)))))
@@ -2007,6 +2008,8 @@ Assuming ~x~ contains the nested list from the exercise.
 (1 (2 (3 (4 (5 (6 7))))))
 (car (cdr (car (cdr (car (cdr (car (cdr (car (cdr (car (cdr x))))))))))))
 #+END_EXAMPLE
+
+Notice how the order is better read from right-to-left rather than from left-to-right.
 *** DONE Exercise 2.26
 CLOSED: [2018-02-07 Wed 21:49]
 Assuming ~append~ is defined as in the text:
@@ -2037,7 +2040,23 @@ CLOSED: [2018-02-07 Wed 22:03]
 
 (deep-reverse (list 1 2 (list 3 4) 5 6))
 #+END_SRC
-*** TODO Exercise 2.28
+*** DONE Exercise 2.28
+CLOSED: [2018-02-08 Thu 21:29]
+#+BEGIN_SRC scheme
+(define (append list1 list2)
+  (if (null? list1)
+      list2
+      (cons (car list1) (append (cdr list1) list2))))
+
+(define (fringe a)
+  (cond ((null? a) a)
+        ((pair? (car a)) (fringe (append (car a) (cdr a))))
+        (else (cons (car a) (fringe (cdr a))))
+        )
+  )
+
+(fringe (list (list 1 2) (list 3 4)))
+#+END_SRC
 *** TODO Exercise 2.29
 *** TODO Exercise 2.30
 *** TODO Exercise 2.31
