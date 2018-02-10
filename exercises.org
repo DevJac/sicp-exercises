@@ -1,4 +1,4 @@
-* SICP [68/356] [19%]
+* SICP [71/356] [19%]
 :PROPERTIES:
 :COOKIE_DATA: recursive
 :END:
@@ -1435,7 +1435,7 @@ CLOSED: [2018-01-13 Sat 22:18]
 
 The number of damps required is log (base 2) of the root.
 *** TODO Exercise 1.46
-** Chapter 2 [26/97] [26%]
+** Chapter 2 [29/97] [29%]
 *** DONE Exercise 2.1
 CLOSED: [2018-01-14 Sun 22:38]
 #+BEGIN_SRC scheme
@@ -2058,9 +2058,54 @@ CLOSED: [2018-02-08 Thu 21:29]
 (fringe (list (list 1 2) (list 3 4)))
 #+END_SRC
 *** TODO Exercise 2.29
-*** TODO Exercise 2.30
-*** TODO Exercise 2.31
-*** TODO Exercise 2.32
+*** DONE Exercise 2.30
+CLOSED: [2018-02-09 Fri 21:02]
+#+BEGIN_SRC scheme
+(define (square n) (* n n))
+
+(define (square-tree tree)
+  (cond ((null? tree) nil)
+        ((not (pair? tree)) (square tree))
+        (else (cons (square-tree (car tree))
+                    (square-tree (cdr tree))))))
+
+(square-tree (list 1 2 3 (list 4 5) (list 6 (list 7))))
+#+END_SRC
+*** DONE Exercise 2.31
+CLOSED: [2018-02-09 Fri 21:07]
+#+BEGIN_SRC scheme
+(define (square n) (* n n))
+
+(define (square-tree tree) (map-tree tree square))
+
+(define (map-tree tree f)
+  (cond ((null? tree) nil)
+        ((not (pair? tree)) (f tree))
+        (else (cons (square-tree (car tree))
+                    (square-tree (cdr tree))))))
+
+(square-tree (list 1 2 3 (list 4 5) (list 6 (list 7))))
+#+END_SRC
+*** DONE Exercise 2.32
+CLOSED: [2018-02-09 Fri 21:44]
+#+BEGIN_SRC scheme
+(define (subsets s)
+  (if (null? s)
+      (list nil)
+      (let ((rest (subsets (cdr s))))
+        (append rest (map
+                      (lambda (x) (cons (car s) x)) rest)))))
+
+(subsets (list 1 2 3))
+#+END_SRC
+
+The ~null?~ case is straight forward. The other case is more interesting.
+
+~rest~ is the subset of ~(cdr s)~, if we were only trying to get the subset of ~(cdr s)~ we'd be done, but we can't forget about ~(car s)~. Each possible subset either contains ~(car s)~ or it does not. The subsets that do not contain ~(car s)~ we already have, this is what ~rest~ is, it is all possible subsets that do not contain ~(car s)~. Let's include ~rest~ in our anwser.
+
+Now all we need to do is ~append~ a list of subsets that do contain ~(car s)~. We can get this list by adding ~(car s)~ to every subset in ~rest~. This will give us all possible subsets which do contain ~(car s)~. Remember that the empty set is part of ~rest~ so ~(car s)~ will end up in a singleton set when we add it in this step.
+
+Now we have all possible subsets which do not contain ~(car s)~ and all possible subsets which do contain ~(car s)~, and thus, we are done.
 *** TODO Exercise 2.33
 *** TODO Exercise 2.34
 *** TODO Exercise 2.35
