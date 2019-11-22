@@ -1,0 +1,305 @@
+#+STARTUP: indent
+* [16/16] Chapter 1
+** DONE Exercise 1.1
+I mentally evaluated the expressions in the exercise, and wrote their values below. Then I confirmed my answers with the REPL.
+
+#+BEGIN_SRC scheme
+  10
+  12
+  8
+  3
+  6
+  19
+  #f
+  4
+  16
+  6
+  16
+#+END_SRC
+** DONE Exercise 1.2
+#+BEGIN_SRC scheme
+  (/ (+ 5 4 (- 2 (- 3 (+ 6 (/ 4 5))))) (* 3 (- 6 2) (- 2 7)))
+#+END_SRC
+** DONE Exercise 1.3
+#+BEGIN_SRC scheme
+  (define (square n) (* n n))
+  (define (add-squared-largest a b c)
+    (cond ((and (> b a) (> c a)) (+ (square b) (square c)))
+          ((and (> a b) (> c b)) (+ (square a) (square c)))
+          ((and (> a c) (> b c)) (+ (square a) (square b)))))
+#+END_SRC
+** DONE Exercise 1.4
+The exercise asks that I explain the following function.
+
+#+BEGIN_SRC scheme
+  (define (a-plus-abs-b a b)
+    ((if (> b 0) + -) a b))
+#+END_SRC
+
+The interesting part of this function is that the operator is dynamic. If ~b~ is positive then ~a~ plus the positive number ~b~ is returned. If ~b~ is negative (or zero) then ~a~ minus the negative number ~b~ is returned. Either way results in a positive number being returned from the function. This, again, is achieved by dynamically determining the operator to use on ~a~ and ~b~.
+** DONE Exercise 1.5
+This question asks what will happen when running the following code.
+
+#+BEGIN_SRC scheme
+  (define (p) (p))
+  (define (test x y)
+    (if (= x 0) 0 y))
+  (test 0 (p))
+#+END_SRC
+
+The behavior of this code depends on the evaluation order of the interpreter. The interpreter may use "applicative-order evaluation", which means it evaluates all arguments before calling the operator. Or the interpreter may use "normal-order evaluation", which means it evaluates operator arguments as late as possible, or possibly not at all if they are not used.
+
+~p~ is a function that takes no arguments, and if evaluated will enter an infinite loop.
+
+~(test 0 (p))~ will enter an infinite loop if the interpreter uses applicative-order evaluation, because ~(p)~ will be evaluated before calling ~test~. With normal-order evaluation it will never be necessary to evaluate ~(p)~ and thus ~(p)~ will never be evaluated and the program will not enter an infinite loop.
+** DONE Exercise 1.6
+This exercise asks if the following is equivalent to ~if~.
+
+#+BEGIN_SRC scheme
+  (define (new-if predicate then-clause else-clause)
+    (cond (predicate then-clause)
+          (else else-clause)))
+#+END_SRC
+
+No, because both clauses will be evaluated regardless of the predicate. If this were used in ~sqrt~ as follows, it would result in an infinite loop, because in ~sqrt-iter~ the "stopping condition" would not cause the iteration to stop.
+
+#+BEGIN_SRC scheme
+  (define (sqrt-iter guess x)
+    (new-if (good-enough? guess x)
+            guess
+            (sqrt-iter (improve guess x) x)))
+#+END_SRC
+** DONE Exercise 1.7
+Below is ~sqrt~ as defined in the text.
+
+#+BEGIN_SRC scheme
+  (define (sqrt-iter guess x)
+    (if (good-enough? guess x)
+        guess
+        (sqrt-iter (improve guess x) x)))
+  (define (improve guess x)
+    (average guess (/ x guess)))
+  (define (average x y)
+    (/ (+ x y) 2))
+  (define (good-enough? guess x)
+    (< (abs (- (square guess) x)) 0.001))
+  (define (sqrt x)
+    (sqrt-iter 1.0 x))
+#+END_SRC
+
+We will test ~sqrt~ with the following.
+
+#+BEGIN_SRC scheme
+  (define (sqrt-error n) (abs (- n (sqrt (* n n)))))
+#+END_SRC
+
+We can see below that ~(sqrt 0.001)~ has an error about 30 times its own value; that's not accurate.
+
+#+BEGIN_SRC scheme
+  scratch.rkt> (sqrt-error 0.001)
+  0.030260655525445275
+  scratch.rkt> (sqrt-error 100)
+  2.549074338276114e-07
+#+END_SRC
+
+So we will make the change suggested in the exercise as follows.
+
+#+BEGIN_SRC scheme
+  (define (sqrt-iter guess x)
+    (let ((improved (improve guess x)))
+      (if (good-enough? guess improved)
+          improved
+          (sqrt-iter improved x))))
+  (define (improve guess x)
+    (average guess (/ x guess)))
+  (define (average x y)
+    (/ (+ x y) 2))
+  (define (difference a b) (abs (- a b)))
+  (define (good-enough? guess improved)
+    (< (/ (difference guess improved) improved) 0.001))
+  (define (sqrt x)
+    (sqrt-iter 1.0 x))
+#+END_SRC
+
+Now the error is much smaller.
+
+#+BEGIN_SRC scheme
+  scratch.rkt> (sqrt-error 0.001)
+  1.5330166281378454e-10
+  scratch.rkt> (sqrt-error 100)
+  2.549074338276114e-07
+#+END_SRC
+** DONE Exercise 1.9
+The exercises asks to use the substitution model to evaluate ~(+ 4 5)~ using the following functions.
+
+#+BEGIN_SRC scheme
+  (define (+ a b)
+    (if (= a 0) b (inc (+ (dec a) b))))
+  (define (+ a b)
+    (if (= a 0) b (+ (dec a) (inc b))))
+#+END_SRC
+
+#+BEGIN_SRC scheme
+  (+ 4 5)
+  (if (= 4 0) 5 (inc (+ (dec 4) 5)))
+  (inc (+ (dec 4) 5))
+  (inc (+ 3 5))
+  ...
+  (inc (inc (+ 2 5)))
+  (inc (inc (inc (+ 1 5))))
+  (inc (inc (inc (inc (+ 0 5)))))
+  (inc (inc (inc (inc 5))))
+  9
+
+
+  (+ 4 5)
+  (if (= 4 0) 5 (+ (dec 4) (inc 5)))
+  (+ (dec 4) (inc 5))
+  (+ 3 6)
+  ...
+  (+ 2 7)
+  (+ 1 8)
+  (+ 0 9)
+  9
+#+END_SRC
+** DONE Exercise 1.11
+#+BEGIN_SRC scheme
+  (define (f-recursive n)
+    (cond ((< n 3) n)
+          (else (+ (f-recursive (- n 1))
+                   (* 2 (f-recursive (- n 2)))
+                   (* 3 (f-recursive (- n 3)))))))
+  (define (f-iterative n)
+    (define (f-iter i f1 f2 f3)
+      (if (= i n)
+          f1
+          (f-iter (+ 1 i)
+                  (+ f1 (* 2 f2) (* 3 f3))
+                  f1
+                  f2)))
+    (cond ((< n 3) n)
+          (else (f-iter 3 4 2 1))))
+#+END_SRC
+** DONE Exercise 1.12
+#+BEGIN_SRC scheme
+  (define (pascals row col)
+    (cond ((<= row 1) 1)
+          ((<= col 1) 1)
+          ((>= col row) 1)
+          (else (+ (pascals (dec row) (dec col)) (pascals (dec row) col)))))
+#+END_SRC
+** DONE Exercise 1.17
+This exercise asks us to implement integer multiplication using only addition and ~double~ and ~half~.
+
+#+BEGIN_SRC scheme
+  (define (double n) (+ n n))
+  (define (half n) (/ n 2))
+  (define (int-mult a b)
+    (cond ((= 1 a) b)
+          ((even? a) (int-mult (half a) (double b)))
+          (else (+ b (int-mult (dec a) b)))))
+#+END_SRC
+** DONE Exercise 1.21
+The text defines the following.
+
+#+BEGIN_SRC scheme
+  (define (square n) (* n n))
+  (define (smallest-divisor n) (find-divisor n 2))
+  (define (find-divisor n test-divisor)
+    (cond ((> (square test-divisor) n) n)
+          ((divides? test-divisor n) test-divisor)
+          (else (find-divisor n (+ test-divisor 1)))))
+  (define (divides? a b) (= (remainder b a) 0))
+#+END_SRC
+
+Just apply the function to complete the exercise.
+
+#+BEGIN_SRC scheme
+  scratch.rkt> (smallest-divisor 199)
+  199
+  scratch.rkt> (smallest-divisor 1999)
+  1999
+  scratch.rkt> (smallest-divisor 19999)
+  7
+#+END_SRC
+** DONE Exercise 1.22
+The exercise defines the following procedure.
+
+#+BEGIN_SRC scheme
+  (define (prime? n)
+    (= n (smallest-divisor n)))
+  (define (timed-prime-test n)
+    (newline)
+    (display n)
+    (start-prime-test n (runtime)))
+  (define (start-prime-test n start-time)
+    (if (prime? n)
+        (report-prime (- (runtime) start-time))))
+  (define (report-prime elapsed-time)
+    (display " *** ")
+    (display elapsed-time))
+#+END_SRC
+
+The exercise asks that we write the following procedure.
+
+#+BEGIN_SRC scheme
+  (define (void) (if #f #f))
+  (define (search-for-primes n start)
+    (cond ((<= n 0) (void))
+          ((even? start) (search-for-primes n (inc start)))
+          ((not (prime? start)) (search-for-primes n (+ 2 start)))
+          (else (timed-prime-test start)
+                (search-for-primes (dec n) (+ 2 start)))))
+  (search-for-primes 3 1000)
+  (search-for-primes 3 10000)
+  (search-for-primes 3 100000)
+  (search-for-primes 3 1000000)
+#+END_SRC
+
+The timings do appear to grow =sqrt(n)=.
+** DONE Exercise 1.29
+#+BEGIN_SRC scheme
+  (define (simpsons f n a b)
+    (define h (/ (- b a) n))
+    (define (y k) (f (+ a (* k h))))
+    (define (coef k)
+      (cond ((= k 0) 1)
+            ((= k n) 1)
+            ((even? k) 2)
+            (else 4)))
+    (define (sum-iter k)
+      (cond ((>= k n) (* (coef k) (y k)))
+            (else (+ (sum-iter (inc k)) (* (coef k) (y k))))))
+    (* (/ h 3) (sum-iter 0)))
+#+END_SRC
+** DONE Exercise 1.34
+The exercises asks what happens if we have the following and then evaluate ~(f f)~.
+
+#+BEGIN_SRC scheme
+  (define (f g) (g 2))
+#+END_SRC
+
+Let's do it.
+
+#+BEGIN_SRC scheme
+  (f f)
+  (f 2)
+  (2 2)
+#+END_SRC
+
+We end up treating ~2~ as a procedure, which is an error.
+
+** DONE Exercise 1.42
+We are asked to implement a ~compose~ procedure.
+
+#+BEGIN_SRC scheme
+  (define (compose f g)
+    (lambda (x) (f (g x))))
+#+END_SRC
+
+We can try this on the REPL to ensure we get the expected answer.
+
+#+BEGIN_SRC scheme
+  scratch.rkt> ((compose square inc) 6)
+  49
+#+END_SRC
