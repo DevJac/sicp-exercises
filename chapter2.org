@@ -1,5 +1,5 @@
 #+STARTUP: indent
-* [4/9] Chapter2
+* [9/9] Chapter2
 ** DONE Exercise 2.1
 #+BEGIN_SRC scheme
   (define (gcd a b)
@@ -89,8 +89,105 @@ The full implementation of a pair, including ~cdr~ follows.
   (define (cdr n)
     (factor-count n 3))
 #+END_SRC
-** TODO Exercise 2.7
-** TODO Exercise 2.8
-** TODO Exercise 2.12
-** TODO Exercise 2.14
-** TODO Exercise 2.15
+** DONE Exercise 2.7
+#+BEGIN_SRC scheme
+  (define (make-interval a b) (cons a b))
+  (define lower-bound car)
+  (define upper-bound cdr)
+#+END_SRC
+** DONE Exercise 2.8
+#+BEGIN_SRC scheme
+  (define (make-interval a b) (cons a b))
+  (define lower-bound car)
+  (define upper-bound cdr)
+  (define (add-interval x y)
+    (make-interval (+ (lower-bound x) (lower-bound y))
+                   (+ (upper-bound x) (upper-bound y))))
+  (define (sub-interval x y)
+    (add-interval x (mul-interval y (make-interval -1 -1))))
+  (define (mul-interval x y)
+    (let ((p1 (* (lower-bound x) (lower-bound y)))
+          (p2 (* (lower-bound x) (upper-bound y)))
+          (p3 (* (upper-bound x) (lower-bound y)))
+          (p4 (* (upper-bound x) (upper-bound y))))
+      (make-interval (min p1 p2 p3 p4)
+                     (max p1 p2 p3 p4))))
+#+END_SRC
+** DONE Exercise 2.12
+#+BEGIN_SRC scheme
+  (define (make-center-percent c p)
+    (let ((range (* c p)))
+      (make-interval (- c range) (+ c range))))
+  (define (average a b)
+    (/ (+ a b) 2))
+  (define (percent i)
+    (let ((center (average (lower-bound i) (upper-bound i))))
+      (let ((range (- (upper-bound i) center)))
+        (/ range center))))
+#+END_SRC
+** DONE Exercise 2.14
+#+BEGIN_SRC scheme
+  (define (make-interval a b) (cons a b))
+  (define lower-bound car)
+  (define upper-bound cdr)
+  (define (make-center-percent c p)
+    (let ((range (* c p)))
+      (make-interval (- c range) (+ c range))))
+  (define (average a b)
+    (/ (+ a b) 2))
+  (define (center i)
+    (average (lower-bound i) (upper-bound i)))
+  (define (percent i)
+    (let ((range (- (upper-bound i) (center i))))
+      (/ range (center i))))
+  (define (add-interval x y)
+    (make-interval (+ (lower-bound x) (lower-bound y))
+                   (+ (upper-bound x) (upper-bound y))))
+  (define (mul-interval x y)
+    (let ((p1 (* (lower-bound x) (lower-bound y)))
+          (p2 (* (lower-bound x) (upper-bound y)))
+          (p3 (* (upper-bound x) (lower-bound y)))
+          (p4 (* (upper-bound x) (upper-bound y))))
+      (make-interval (min p1 p2 p3 p4)
+                     (max p1 p2 p3 p4))))
+  (define (div-interval x y)
+    (mul-interval
+     x
+     (make-interval (/ 1.0 (upper-bound y))
+                    (/ 1.0 (lower-bound y)))))
+  (define a (make-center-percent 100 0.01))
+  (define b (make-center-percent 100 0.01))
+  (div-interval a a)
+  (div-interval a b)
+#+END_SRC
+
+The problem here is that =A/A= should be exactly =1=, and =A/B= should have some uncertainty, but both calculations have some uncertainty.
+
+You could try every permutation of lower and upper bound across the variables. This would ensure a "high A" is divided by another "high A" and thus would be exactly 1, while =A/B= had some uncertainty. You might also need to check a number of points in between to handle the variables being used in non-linear functions.
+** DONE Exercise 2.15
+Yes. ~par2~ is better because the uncertainty of each variable is only introduced once. Using a variable multiple times introduces that variables uncertainty to the calculation multiple times. ~par2~ uses each variable only once.
+
+#+BEGIN_SRC scheme
+  (define (par1 r1 r2)
+    (div-interval (mul-interval r1 r2)
+                  (add-interval r1 r2)))
+  (define (par2 r1 r2)
+    (let ((one (make-interval 1 1)))
+      (div-interval
+       one (add-interval (div-interval one r1)
+                         (div-interval one r2)))))
+
+  (define r1 (make-center-percent 100 0.05))
+  (define r2 (make-center-percent 100 0.05))
+  (par1 r1 r2)
+  (par2 r1 r2)
+#+END_SRC
+
+The above code produces the following output.
+
+#+BEGIN_SRC scheme
+  (42.97619047619048 . 58.026315789473685)
+  (47.5 . 52.49999999999999)
+#+END_SRC
+
+This demonstrates that ~par2~ has less uncertainty, while still being a valid equation.
