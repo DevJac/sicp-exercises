@@ -1,0 +1,96 @@
+#+STARTUP: indent
+* [4/9] Chapter2
+** DONE Exercise 2.1
+#+BEGIN_SRC scheme
+  (define (gcd a b)
+    (if (= b 0)
+        a
+        (gcd b (remainder a b))))
+  (define (make-rat n d)
+    (let ((g (gcd n d)))
+      (cond ((negative? d) (cons (* -1 (/ n g)) (* -1 (/ d g))))
+            (else (cons (/ n g) (/ d g))))))
+#+END_SRC
+** DONE Exercise 2.3
+The exercises asks us to create a rectangle abstraction and procedures to compute the perimeter and area.
+
+#+BEGIN_SRC scheme
+  (define (make-rect w h)
+    (cons w h))
+  (define (rect-width r) (car r))
+  (define (rect-height r) (cdr r))
+  (define (rect-perimeter r)
+    (* 2 (+ (rect-width r) (rect-height r))))
+  (define (rect-area r)
+    (* (rect-width r) (rect-height r)))
+#+END_SRC
+
+The exercise then asks us to change the representation of our rectangle without having to change the perimeter or area procedures.
+
+#+BEGIN_SRC scheme
+  (define (make-point x y)
+    (cons x y))
+  (define (make-rect center w h)
+    (cons center (cons w h)))
+  (define (rect-width r) (car (cdr r)))
+  (define (rect-height r) (cdr (cdr r)))
+  (define (rect-perimeter r)
+    (* 2 (+ (rect-width r) (rect-height r))))
+  (define (rect-area r)
+    (* (rect-width r) (rect-height r)))
+#+END_SRC
+
+I changed the rectangle so that it includes the center point, and then had to adjust ~rect-width~ and ~rect-height~, but not the perimeter or area procedures. The perimeter and area procedures continued to work without modification.
+** DONE Exercise 2.4
+The exercise asks us to explain the following implementation of pairs.
+
+#+BEGIN_SRC scheme
+  (define (cons x y)
+    (lambda (m) (m x y)))
+  (define (car z)
+    (z (lambda (p q) p)))
+#+END_SRC
+
+Let's do the substitutions.
+
+#+BEGIN_SRC scheme
+  (cons x y)
+  (lambda (m) (m x y))
+
+  (car (lambda (m) (m x y)))
+  ((lambda (m) (m x y)) (lambda (p q) p))
+  ((lambda (p q) p) x y)
+  x
+#+END_SRC
+
+~cons~ produces an "apply-er" and ~car~ is a "getter" which returns the first given argument. ~car~ takes the "apply-er" which applies the "getter" and you end up with the first element of the pair.
+
+The full implementation of a pair, including ~cdr~ follows.
+
+#+BEGIN_SRC scheme
+  (define (cons x y)
+    (lambda (m) (m x y)))
+  (define (car z)
+    (z (lambda (p q) p)))
+  (define (cdr z)
+    (z (lambda (p q) q)))
+#+END_SRC
+** DONE Exercise 2.5
+#+BEGIN_SRC scheme
+  (define (divisible-by? n d)
+    (= 0 (remainder n d)))
+  (define (factor-count n f)
+    (cond ((divisible-by? n f) (+ 1 (factor-count (/ n f) f)))
+          (else 0)))
+  (define (cons a b)
+    (* (expt 2 a) (expt 3 b)))
+  (define (car n)
+    (factor-count n 2))
+  (define (cdr n)
+    (factor-count n 3))
+#+END_SRC
+** TODO Exercise 2.7
+** TODO Exercise 2.8
+** TODO Exercise 2.12
+** TODO Exercise 2.14
+** TODO Exercise 2.15
