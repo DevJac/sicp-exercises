@@ -1,5 +1,5 @@
 #+STARTUP: indent
-* [9/9] Chapter2
+* [15/19] Chapter2
 ** DONE Exercise 2.1
 #+BEGIN_SRC scheme
   (define (gcd a b)
@@ -191,3 +191,54 @@ The above code produces the following output.
 #+END_SRC
 
 This demonstrates that ~par2~ has less uncertainty, while still being a valid equation.
+** DONE Exercise 2.17
+#+BEGIN_SRC scheme
+  (define (last-pair xs)
+    (cond ((null? (cdr xs)) xs)
+          (else (last-pair (cdr xs)))))
+#+END_SRC
+** DONE Exercise 2.18
+#+BEGIN_SRC scheme
+  (define (reverse xs)
+    (define (iter xs reversed)
+      (if (null? xs) reversed (iter (cdr xs) (cons (car xs) reversed))))
+    (iter xs nil))
+#+END_SRC
+** DONE Exercise 2.20
+#+BEGIN_SRC scheme
+  (define (same-parity first . rest)
+    (define (iter rest result)
+      (cond ((null? rest) result)
+            ((and (even? first) (even? (car rest))) (iter (cdr rest) (cons (car rest) result)))
+            ((and (odd? first) (odd? (car rest))) (iter (cdr rest) (cons (car rest) result)))
+            (else (iter (cdr rest) result))))
+    (reverse (iter rest (list first))))
+#+END_SRC
+** DONE Exercise 2.21
+#+BEGIN_SRC scheme
+  (define (square n) (* n n))
+  (define (square-list-0 items)
+    (if (null? items)
+        nil
+        (cons (square (car items)) (square-list (cdr items)))))
+  (define (square-list items)
+    (map square items))
+#+END_SRC
+** DONE Exercise 2.23
+#+BEGIN_SRC scheme
+  (define (for-each f xs)
+    (f (car xs))
+    (if (pair? (cdr xs))
+        (for-each f (cdr xs))))
+#+END_SRC
+** DONE Exercise 2.25
+#+BEGIN_SRC scheme
+  (cadr (caddr (list 1 3 (list 5 7) 9)))
+  (car (car (list (list 7))))
+  (define x (list 1 (list 2 (list 3 (list 4 (list 5 (list 6 7)))))))
+  (cadr (cadr (cadr (cadr (cadr (cadr x))))))
+#+END_SRC
+** TODO Exercise 2.31
+** TODO Exercise 2.33
+** TODO Exercise 2.38
+** TODO Exercise 2.40
