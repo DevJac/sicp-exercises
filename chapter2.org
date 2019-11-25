@@ -1,5 +1,5 @@
 #+STARTUP: indent
-* [15/19] Chapter2
+* [19/19] Chapter2
 ** DONE Exercise 2.1
 #+BEGIN_SRC scheme
   (define (gcd a b)
@@ -238,7 +238,64 @@ This demonstrates that ~par2~ has less uncertainty, while still being a valid eq
   (define x (list 1 (list 2 (list 3 (list 4 (list 5 (list 6 7)))))))
   (cadr (cadr (cadr (cadr (cadr (cadr x))))))
 #+END_SRC
-** TODO Exercise 2.31
-** TODO Exercise 2.33
-** TODO Exercise 2.38
-** TODO Exercise 2.40
+** DONE Exercise 2.31
+#+BEGIN_SRC scheme
+  (define (tree-map f tree)
+    (define (g x)
+      (cond ((pair? x) (tree-map f x))
+            (else (f x))))
+    (map g tree))
+#+END_SRC
+** DONE Exercise 2.33
+#+BEGIN_SRC scheme
+  (define (accumulate op initial sequence)
+    (if (null? sequence)
+        initial
+        (op (car sequence)
+            (accumulate op initial (cdr sequence)))))
+  (define (map p sequence)
+    (accumulate (lambda (x y) (cons (p x) y)) nil sequence))
+  (define (append seq1 seq2)
+    (accumulate cons seq2 seq1))
+  (define (length sequence)
+    (accumulate (lambda (_ len) (inc len)) 0 sequence))
+#+END_SRC
+** DONE Exercise 2.38
+#+BEGIN_SRC scheme
+  (define (fold-right op initial sequence)
+    (if (null? sequence)
+        initial
+        (op (car sequence)
+            (accumulate op initial (cdr sequence)))))
+  (define (fold-left op initial sequence)
+    (define (iter result rest)
+      (if (null? rest)
+          result
+          (iter (op result (car rest))
+                (cdr rest))))
+    (iter initial sequence))
+  (fold-right / 1 (list 1 2 3))
+  (fold-left / 1 (list 1 2 3))
+  (fold-right list nil (list 1 2 3))
+  (fold-left list nil (list 1 2 3))
+#+END_SRC
+
+~op~ would have to be commutative for both ~fold-right~ and ~fold-left~ to give the same result.
+
+~fold-left~ folds from left to right, it applies ~op~ to the items on the left first. ~fold-right~ is opposite. I always forget which directions the folds go in. For example, "fold left" could mean the fold is "going left" or that it is starting from left and "going right". ~fold-left~ goes right, it folds from left to right. ~fold-left~ seems more natural, since we are accustomed to reading lists from left to right.
+** DONE Exercise 2.40
+#+BEGIN_SRC scheme
+  (define (enumerate-interval low high)
+    (if (> low high)
+        nil
+        (cons low (enumerate-interval (+ low 1) high))))
+  (define (unique-pairs n)
+    (flatmap
+     (lambda (i) (map (lambda (j) (cons i j)) (enumerate-interval 1 (dec i))))
+     (enumerate-interval 2 n)))
+  (define (prime-sum? pair)
+    (prime? (+ (car pair) (cdr pair))))
+  (define (prime-sum-pairs n)
+    (filter prime-sum? (unique-pairs n)))
+  (prime-sum-pairs 5)
+#+END_SRC
