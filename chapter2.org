@@ -1,5 +1,5 @@
 #+STARTUP: indent
-* [24/24] Chapter2
+* [26/33] Chapter2
 ** DONE Exercise 2.1
 #+BEGIN_SRC scheme
   (define (gcd a b)
@@ -368,3 +368,60 @@ I evaluated each of the expressions mentally and then checked my answers with th
   (union-set (list 1) (list 2 3))
   (union-set (list 1 3 4 6 9 10) (list 1 2 3 5 7 8 9))
 #+END_SRC
+** DONE Exercise 2.75
+#+BEGIN_SRC scheme
+  (define (make-from-real-imag x y)
+    (define (dispatch op)
+      (cond ((eq? op 'real-part) x)
+            ((eq? op 'imag-part) y)
+            ((eq? op 'magnitude) (sqrt (+ (square x) (square y))))
+            ((eq? op 'angle) (atan y x))
+            (else (error "Unknown op: MAKE-FROM-REAL-IMAG" op))))
+    dispatch)
+  (define (make-from-mag-ang r a)
+    (define (dispatch op)
+      (cond ((eq? op 'real-part) (* r (cos a)))
+            ((eq? op 'imag-part) (* r (sin a)))
+            ((eq? op 'magnitude) r)
+            ((eq? op 'angle) a)))
+    dispatch)
+  (define a (make-from-real-imag 3 5))
+  (define b (make-from-mag-ang (a 'magnitude) (a 'angle)))
+  (a 'real-part)
+  (b 'real-part)
+  (a 'imag-part)
+  (b 'imag-part)
+  (a 'magnitude)
+  (b 'magnitude)
+  (a 'angle)
+  (b 'angle)
+#+END_SRC
+** DONE Exercise 2.76
+*** generic operations with explicit dispatch
+Tag the data with its "type", then hard-code every "operation" to handle every type. (An "operation" is a procedure intended to be used with the relevant data.)
+
+When a new type is added, all existing operations must be updated.
+When a new operation is added, it can be added in isolation, but the new operation must be aware of all existing types.
+*** data directed
+Maintain a table of types and operations, such that we can lookup what specific procedure implements an operation for a specific type.
+
+When a new type is added, new entries to the types/operations table must be made, but the rest of our system can remain unchanged.
+When a new operation is added, it must be implemented for all existing types, and then the types/operations table must be updated.
+*** message passing
+Each type maintains its own operations internally. Types expose a common interface so that higher level procedures can call the internal operations of the type without ever knowing exactly what type it is.
+
+When a new type is added, it must implement the expected operations internally and expose them in the expected way.
+When a new operation is added, all existing types must be updated to add the new operation to their other internal operations.
+*** thoughts
+The amount of work needed with any system is roughly =number-of-types * number-of-operations=.
+
+The first system with generic operations using explicit dispatch seems more ad hoc; you have more control but that can be a bad thing because the dispatch for each operation may look completely different.
+
+Besides the downsides of generic operations with explicit dispatch, I don't think either system is necessarily better for adding new types or operations.
+** TODO Exercise 2.78
+** TODO Exercise 2.79
+** TODO Exercise 2.80
+** TODO Exercise 2.83
+** TODO Exercise 2.84
+** TODO Exercise 2.85
+** TODO Exercise 2.88
