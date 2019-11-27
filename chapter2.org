@@ -1,5 +1,5 @@
 #+STARTUP: indent
-* [26/33] Chapter2
+* [29/33] Chapter2
 ** DONE Exercise 2.1
 #+BEGIN_SRC scheme
   (define (gcd a b)
@@ -418,9 +418,52 @@ The amount of work needed with any system is roughly =number-of-types * number-o
 The first system with generic operations using explicit dispatch seems more ad hoc; you have more control but that can be a bad thing because the dispatch for each operation may look completely different.
 
 Besides the downsides of generic operations with explicit dispatch, I don't think either system is necessarily better for adding new types or operations.
-** TODO Exercise 2.78
-** TODO Exercise 2.79
-** TODO Exercise 2.80
+** DONE Exercise 2.78
+#+BEGIN_SRC scheme
+  (define (attach-tag type-tag contents)
+    (cond ((eq? type-tag 'scheme-number) contents)
+          (else (cons type-tag contents))))
+  (define (type-tag datum)
+    (cond ((number? datum) 'scheme-number)
+          (else (if (pair? datum)
+                    (car datum)
+                    (error "Bad tagged datum: TYPE-TAG" datum)))))
+  (define (contents datum)
+    (cond ((number? datum) datum)
+          (else (if (pair? datum)
+                    (cdr datum)
+                    (error "Bad tagged datum: CONTENTS" datum)))))
+#+END_SRC
+** DONE Exercise 2.79
+#+BEGIN_SRC scheme
+  (define (equ? x y) (apply-generic 'equ? x y))
+  (define (=zero? x) (apply-generic '=zero? x))
+  (define (install-scheme-number-package)
+    ...
+    (put 'equ? '(scheme-number scheme-number)
+         (lambda (x y) (= x y)))
+    (put '=zero? 'scheme-number
+         (lambda (x) (= x 0)))
+    'done)
+  (define (install-rational-package)
+    ...
+    (put 'equ? '(rational rational)
+         (lambda (x y) (and (= (numer x) (numer y))
+                            (= (denom x) (denom y)))))
+    (put '=zero? 'rational
+         (lambda (x) (= 0 (numer x))))
+    'done)
+  (define (install-complex-package)
+    ...
+    (put 'equ? '(complex complex)
+         (lambda (x y) (and (= (real-part x) (real-part y))
+                            (= (imag-part x) (imag-part y)))))
+    (put '=zero? 'complex
+         (lambda (x) (and (= 0 (real-part x)) (= 0 (imag-part x)))))
+    'done)
+#+END_SRC
+** DONE Exercise 2.80
+See Exercise 2.79.
 ** TODO Exercise 2.83
 ** TODO Exercise 2.84
 ** TODO Exercise 2.85
